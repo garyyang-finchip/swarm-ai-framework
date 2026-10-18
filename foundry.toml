@@ -1,0 +1,17 @@
+[profile.default]
+src = "assets/erc-sai/contracts"
+test = "test"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 1
+via_ir = true
+
+fs_permissions = [
+  { access = "read", path = "./assets/erc-sai/vectors" },
+  { access = "read-write", path = "./deployments" },
+]
+
+[fmt]
+line_length = 100
