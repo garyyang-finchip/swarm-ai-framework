@@ -227,7 +227,7 @@ contract SAILifecycleTest is SAIBase {
         vm.expectRevert(SAI_WrongState.selector); reg.suspendMember(id, w2);
         vm.expectRevert(SAI_WrongState.selector); reg.remove(id, w2);
         vm.expectRevert(SAI_WrongState.selector); reg.substitute(id, w2, w3);
-        vm.expectRevert(SAI_WrongState.selector); reg.amend(id, CHARTER2, "uri", bytes32(0), false);
+        vm.expectRevert(SAI_WrongState.selector); reg.amend(id, CHARTER2, "uri", bytes32(0), bytes32(0), false);
         vm.expectRevert(SAI_WrongState.selector); reg.attach(id, T.ResourceInput(keccak256("sai.resource.code"), 0, address(0), 0, keccak256("x"), bytes32(0), "", bytes32(0), address(0)));
         vm.stopPrank();
         vm.prank(stranger);
@@ -286,9 +286,9 @@ contract SAILifecycleTest is SAIBase {
         roles[0] = ROLE_COORD; roles[1] = ROLE_WORKER;
         vm.prank(stranger);
         vm.expectRevert(SAI_NotAuthorized.selector);
-        reg.succeed(id, spec, CHARTER2, "uri2", defaultObjective(), carried, roles);
+        reg.succeed(id, spec, CHARTER2, COMMIT2, "uri2", defaultObjective(), carried, roles);
         vm.prank(coord);
-        bytes32 next = reg.succeed(id, spec, CHARTER2, "uri2", defaultObjective(), carried, roles);
+        bytes32 next = reg.succeed(id, spec, CHARTER2, COMMIT2, "uri2", defaultObjective(), carried, roles);
 
         T.Swarm memory old = reg.getSwarm(id);
         assertEq(uint8(old.state), uint8(T.LifecycleState.CONCLUDING));
@@ -318,11 +318,11 @@ contract SAILifecycleTest is SAIBase {
         roles[0] = ROLE_WORKER;
         vm.prank(coord);
         vm.expectRevert(SAI_NotCarriedMember.selector);
-        reg.succeed(id, defaultSpec(), CHARTER2, "u", defaultObjective(), carried, roles);
+        reg.succeed(id, defaultSpec(), CHARTER2, COMMIT2, "u", defaultObjective(), carried, roles);
         carried[0] = w1;
         vm.prank(coord);
         vm.expectRevert(SAI_CarriedShape.selector);
-        reg.succeed(id, defaultSpec(), CHARTER2, "u", defaultObjective(), carried, new bytes32[](0));
+        reg.succeed(id, defaultSpec(), CHARTER2, COMMIT2, "u", defaultObjective(), carried, new bytes32[](0));
     }
 
     // ------------------------------------------------------------------ revision log

@@ -9,7 +9,7 @@ contract SAISpecTest is SAIBase {
     function expectFormRevert(T.SwarmSpec memory spec, bytes4 err) internal {
         vm.expectRevert(err);
         vm.prank(initiator);
-        reg.form(spec, CHARTER1, "uri", bytes32(0), origin(), defaultObjective());
+        reg.form(spec, CHARTER1, COMMIT1, "uri", bytes32(0), origin(), defaultObjective());
     }
 
     function test_formRecordsSpecHashAndCharter() public {
@@ -143,7 +143,7 @@ contract SAISpecTest is SAIBase {
         o.acceptanceAuthority = address(0);
         vm.expectRevert(SAI_NoConclusionPath.selector);
         vm.prank(initiator);
-        reg.form(spec, CHARTER1, "uri", bytes32(0), origin(), o);
+        reg.form(spec, CHARTER1, COMMIT1, "uri", bytes32(0), origin(), o);
         // with an acceptance authority the spec is fine
         formWith(spec, defaultObjective());
     }
@@ -173,27 +173,27 @@ contract SAISpecTest is SAIBase {
         o.objectiveHash = bytes32(0);
         vm.expectRevert(SAI_ZeroObjective.selector);
         vm.prank(initiator);
-        reg.form(defaultSpec(), CHARTER1, "uri", bytes32(0), origin(), o);
+        reg.form(defaultSpec(), CHARTER1, COMMIT1, "uri", bytes32(0), origin(), o);
         o = defaultObjective();
         o.kind = T.ObjectiveKind.MILESTONED; // count 0
         vm.expectRevert(SAI_MilestoneCount.selector);
         vm.prank(initiator);
-        reg.form(defaultSpec(), CHARTER1, "uri", bytes32(0), origin(), o);
+        reg.form(defaultSpec(), CHARTER1, COMMIT1, "uri", bytes32(0), origin(), o);
         o = defaultObjective();
         o.milestoneCount = 2; // TERMINAL with milestones
         vm.expectRevert(SAI_MilestoneCount.selector);
         vm.prank(initiator);
-        reg.form(defaultSpec(), CHARTER1, "uri", bytes32(0), origin(), o);
+        reg.form(defaultSpec(), CHARTER1, COMMIT1, "uri", bytes32(0), origin(), o);
     }
 
     function test_parentMustBeFormingOrActive() public {
         bytes32 parent = formDefault();
         vm.prank(initiator);
-        bytes32 child = reg.form(defaultSpec(), CHARTER1, "uri", parent, origin(), defaultObjective());
+        bytes32 child = reg.form(defaultSpec(), CHARTER1, COMMIT1, "uri", parent, origin(), defaultObjective());
         assertEq(reg.getSwarm(child).parentId, parent);
         vm.expectRevert(SAI_ParentUnavailable.selector);
         vm.prank(initiator);
-        reg.form(defaultSpec(), CHARTER1, "uri", keccak256("nope"), origin(), defaultObjective());
+        reg.form(defaultSpec(), CHARTER1, COMMIT1, "uri", keccak256("nope"), origin(), defaultObjective());
     }
 
     function test_initiatorRoleChecked() public {

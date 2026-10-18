@@ -38,6 +38,8 @@ abstract contract SAIBase is Test {
     bytes32 constant ORIGIN_INITIATOR = keccak256("sai.origin.initiator");
     bytes32 constant CHARTER1 = keccak256("charter v1");
     bytes32 constant CHARTER2 = keccak256("charter v2");
+    bytes32 constant COMMIT1 = keccak256("commitment v1");
+    bytes32 constant COMMIT2 = keccak256("commitment v2");
     bytes32 constant OBJECTIVE1 = keccak256("objective v1");
 
     uint64 constant DAY = 86400;
@@ -106,7 +108,7 @@ abstract contract SAIBase is Test {
 
     function formWith(T.SwarmSpec memory spec, T.ObjectiveInput memory o) internal returns (bytes32 id) {
         vm.prank(initiator);
-        id = reg.form(spec, CHARTER1, "ipfs://charter-v1", bytes32(0), origin(), o);
+        id = reg.form(spec, CHARTER1, COMMIT1, "ipfs://charter-v1", bytes32(0), origin(), o);
     }
 
     function formDefault() internal returns (bytes32 id) {

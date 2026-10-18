@@ -1,10 +1,10 @@
 # Swarm AI Framework (SAI) — Design Memo
 
-Version 0.2 — 2026-10-18 — status tags: [Decided] fixed for the proposal, [Open] left for a later round.
+Version 0.3 — 2026-10-19 — status tags: [Decided] fixed for the proposal, [Open] left for a later round.
 
 ## 0. What this document is
 
-The mechanism memo behind `ERCS/erc-sai.md`. It records the three definitions the proposal rests on — formation and boundary, objective and attainment, collaboration modes — as an object model, a state machine and rules; the orthogonal classification of collaboration modes; the compatibility map to the surrounding standards; and, in Section 11, the decisions log of round 2: the twelve rulings taken on the v0.1 open questions and the items added from the advisory review. The ERC text is normative; this memo explains why it says what it says. Where v0.1 differed, the v0.2 text wins.
+The mechanism memo behind `ERCS/erc-sai.md`. It records the three definitions the proposal rests on — formation and boundary, objective and attainment, collaboration modes — as an object model, a state machine and rules; the orthogonal classification of collaboration modes; the compatibility map to the surrounding standards; and, in Section 11, the decisions log: the twelve rulings taken on the v0.1 open questions, the items added from the advisory review, and the first review round of the Magicians thread (revision 2). The ERC text is normative; this memo explains why it says what it says. Where v0.1 differed, the v0.2 text wins.
 
 ## 1. Positioning
 
@@ -83,7 +83,7 @@ The initiator's trust: `sai.role.initiator` may carry an eligibility module chec
 
 ### 3.2 Two-layer charter [Decided]
 
-`SwarmSpec` (on-chain, executed, frozen): roles, phases with posture, sixteen authorities, activation rule, contribution mode, member bounds, fallback durations. Swarm Pack (off-chain, versioned, `charterHash = SHA-256(JCS(root))`): charter text, objective descriptor, collaboration structure and allocation rule per phase, roles in words, resource manifest, decision-point descriptions, `prev`. The pack names the spec it describes; the spec is what runs.
+`SwarmSpec` (on-chain, executed, frozen): roles, phases with posture, sixteen authorities, activation rule, contribution mode, member bounds, fallback durations. Swarm Pack (off-chain, versioned, `charterHash = SHA-256(JCS(root))`): charter text, objective descriptor (`objectiveHash`), the members' economic commitment — allocation per phase, costs, liabilities, data access, actions in their name — (`commitmentHash`), collaboration structure per phase, roles in words, resource manifest, decision-point descriptions, `prev`. Three hashes are on-chain: the pack's, the objective's and the commitment's. The pack names the spec it describes; the spec is what runs.
 
 ### 3.3 Boundary [Decided]
 
@@ -95,7 +95,7 @@ The initiator's trust: `sai.role.initiator` may carry an eligibility module chec
 
 ### 3.5 Malfunctioning, retired, drifted or compromised members [Decided]
 
-Three lines of defence, each with a clear owner: (1) the eligibility predicate — a revoked assertion, a stale or retired identity, a transferred agent makes `challenge` suspend the member automatically; a reverting module changes nothing; (2) the `REMOVE` decision point — judgment, by a coordinator or by a collective decision; (3) substitution — a successor account takes the seat (`substitute`), the old one exits `REPLACED` with history kept. Contributions recorded while suspended carry a flag so allocation can exclude them. A suspension takes effect for the registry's own gates at once; what the member's software keeps doing off-chain is for execution environments. Decisions already filed are decided by the roster snapshotted at filing; the registry's refusal at execution is what stops an enactment the ledger no longer allows.
+Three lines of defence, each with a clear owner: (1) the eligibility predicate — a revoked assertion, a stale or retired identity, a transferred agent makes `challenge` suspend the member automatically; a reverting module, a non-boolean answer or a `false` returned with less than one eighth of the pre-call gas (a starved inner read) changes nothing; the path back is symmetric — anyone's `challenge` reinstates a member suspended for ineligibility once the module answers `true` again, and `expel` after the grace period re-evaluates the module before acting, so nobody is expelled on the clock alone; (2) the `REMOVE` decision point — judgment, by a coordinator or by a collective decision; (3) substitution — a successor account takes the seat (`substitute`), the old one exits `REPLACED` with history kept. Contributions recorded while suspended carry a flag so allocation can exclude them. A suspension takes effect for the registry's own gates at once; what the member's software keeps doing off-chain is for execution environments. Decisions already filed are decided by the roster snapshotted at filing; the registry's refusal at execution is what stops an enactment the ledger no longer allows.
 
 ### 3.6 Start and end conditions [Decided]
 
@@ -121,7 +121,7 @@ Rule: `maxDuration > 0 || inactivityTimeout > 0`, and `recruitmentWindow > 0` so
 
 ### 4.2 Start, process, attainment, change [Decided]
 
-Start logic is the activation condition; process logic is phases plus milestones plus the contribution stream (attribution, never judgment; mode `DISABLED`, `MEMBERS` or `OPEN` per spec); attainment is `conclude(outcome, resultHash)` with `ACHIEVED` gated on all milestones for milestoned objectives; change logic is amendment for the pack — minor (text within the commitment, no window) or material (commitment version increments, exit window opens, pending admissions hold until the candidate accepts the new commitment) — and succession for the spec; `ADDRESS` authorities transfer, `ROLE` authorities rotate with the ledger.
+Start logic is the activation condition; process logic is phases plus milestones plus the contribution stream (attribution, never judgment; mode `DISABLED`, `MEMBERS` or `OPEN` per spec); attainment is `conclude(outcome, resultHash)` with `ACHIEVED` gated on all milestones for milestoned objectives; change logic is amendment for the pack — minor (objective and commitment hashes unchanged, not declared material: charter version only) or material (a changed objective or commitment hash makes it so by construction, or the authority declares it; commitment version increments, exit window opens, pending admissions hold until the candidate accepts the new commitment) — and succession for the spec; `ADDRESS` authorities transfer, `ROLE` authorities rotate with the ledger.
 
 ### 4.3 Swarm as fulfiller; tender calls swarm [Decided]
 
@@ -175,7 +175,7 @@ Two forms. As a **member**: anything with an address — a deployed program that
 
 ## 8. Interface summary
 
-See ERC Sections 12 and 13: `form / activate / abort / suspend / resume / enforceRoster / enforceInactivity / enforceDeadline / advance / conclude / dissolve / succeed`; `amend / setCharterURI / transferAuthority / setAccount`; `applyToJoin / join / joinBySig / acceptCharter / admit / leave / suspendMember / reinstate / remove / challenge / expel / substitute`; `recordContribution / recordMilestone`; `attach / detach / registerTerm`; views including `acceptedCharterOf`, `seatEpochOf`, `isAuthorized`, `hardDeadlineOf`, `joinDigest`, `isTerm`, `termURI`; `IEligibility`, `ISwarmAccount`, `IResourceAdapter`. Reference adapters: `SwarmDecisionAdapter` (ERC-8436), `SwarmTenderAdapter` (task-tender kernel); modules: allowlist, composite, ERC-8004 identity, trust-assertion level, identity state; `SwarmAccount` executing under `REPRESENT`.
+See ERC Sections 12 and 13: `form / activate / abort / suspend / resume / enforceRoster / enforceInactivity / enforceDeadline / advance / conclude / dissolve / succeed`; `amend / setCharterURI / transferAuthority / setAccount`; `applyToJoin / join / joinBySig / acceptCharter / admit / leave / suspendMember / reinstate / remove / challenge / expel / substitute`; `recordContribution / recordMilestone`; `attach / detach / registerTerm`; views including `acceptedCharterOf`, `seatEpochOf`, `isAuthorized`, `hardDeadlineOf`, `joinDigest`, `isTerm`, `termURI`; `IEligibility`, `ISwarmAccount` (`swarmId`, `registry`, `recoveryAddress`), `IResourceAdapter`. Reference adapters: `SwarmDecisionAdapter` (ERC-8436), `SwarmTenderAdapter` (task-tender kernel); modules: allowlist, composite, ERC-8004 identity, trust-assertion level, identity state; `SwarmAccount` executing under `REPRESENT` while the swarm lives and `recover`ing through its recovery address after dissolution.
 
 ## 9. Security themes (expanded in the ERC)
 
@@ -183,9 +183,10 @@ Sybil rosters; initiator power; griefing through fallbacks and challenges; unbou
 
 ## 10. Implementation notes
 
-- The registry exceeded the EIP-170 limit as one contract (35,484 B). It is split into `SwarmRegistry` (16,379 B; storage, authority gates, revision log, views) and the external libraries `LifecycleLib` (20,409 B), `MembershipLib` (11,543 B), `ResourceLib` (4,734 B) and `SpecValidator` (2,759 B), all sharing one `SAIStore.Store` layout and executing by `DELEGATECALL` in the registry's context; events are emitted through the qualified `ISwarmRegistryEvents` interface so that they appear as the registry's. Solidity 0.8.24, IR pipeline, optimizer runs 1.
+- The registry exceeded the EIP-170 limit as one contract (35,484 B). It is split into `SwarmRegistry` (16,480 B; storage, authority gates, revision log, views) and the external libraries `LifecycleLib` (20,903 B), `MembershipLib` (12,047 B), `ResourceLib` (4,819 B) and `SpecValidator` (2,759 B), all sharing one `SAIStore.Store` layout and executing by `DELEGATECALL` in the registry's context; events are emitted through the qualified `ISwarmRegistryEvents` interface so that they appear as the registry's. Solidity 0.8.24, IR pipeline, optimizer runs 1.
 - Roster-wide exits (`SWARM_DISSOLVED`, `NOT_CARRIED`) are derived by `memberStatus` from `rosterPhase` / `carriedPhase` and the lifecycle state; no transition loops over the roster.
-- `challenge` is a `staticcall` to the module; a revert is `(evaluated=false, eligible=false)` and changes nothing.
+- `challenge` and `expel` share one module call: a revert, a non-boolean return or a `false` returned with less than one eighth of the pre-call gas is `(evaluated=false, eligible=false)`; `challenge` then changes nothing, `expel` reverts `SAI_Unevaluable`. One eighth because a catching layer keeps one sixty-fourth of its own budget, so a starved inner read returns with about two sixty-fourths and nested catches add one sixty-fourth each.
+- `isAuthorized` returns `false` for every kind once the swarm is `DISSOLVED`; the account's `recoveryAddress()` is the only post-dissolution path.
 - The decision adapter ignores an input-window end already in the past when computing the consumer deadline, so a decision taken after a bidding window closed (advancing the phase) is bounded by the hard deadline alone.
 - Vectors are produced by ethers v6 and an independent JCS canonicalizer, cross-checked against a Python canonicalizer and re-derived in Solidity.
 
@@ -225,10 +226,20 @@ Sybil rosters; initiator power; griefing through fallbacks and challenges; unbou
 | Unknown is not a verdict | Rationale on eligibility and challenge; reverting module = no change; `NoDecision` = status quo |
 | Suspension versus the member's off-chain software | Security Considerations "Compromised members" distinguishes the registry's gates from execution environments |
 
-### 11.3 Deferred [Open]
+### 11.3 First thread review — revision 2 (2026-10-19)
+
+Posts #2–#4 of Magicians topic 29998, within eight hours of the opening post; all three accepted, all three implemented before the replies (`docs/magicians-replies-2026-10-19.md`).
+
+| Post | Finding | Resolution |
+|---|---|---|
+| #2 SergeevDmitry | The amendment authority could change the allocation rule and call it minor: the exit window depended on the party it was meant to constrain, and allocation lived in the pack where the registry cannot see it | The pack gets a `commitment` member (allocation per phase, costs, liabilities, data access, actions in the members' name) with its own `commitmentHash`, committed at formation and passed to `amend` and `succeed`; a changed objective or commitment hash is material by construction, the `material` flag is one-way. Answers question 2 of the opening post. Schema moves `allocation` out of the phases; charter vectors regenerated; `ISwarmRegistry` id changed |
+| #3 Zealynx | (a) A third-party module that catches its own reads answers `false` when a caller starves the inner read (63/64 rule), suspending an honest member; (b) `expel` never re-read the module, so a lapsed-and-recovered identity was expelled after grace unless someone reinstated in time; one suspension can cascade into `enforceRoster` | (a) Remainder rule in `challenge`/`expel`: a `false` with less than one eighth of the pre-call gas left is unevaluable (one eighth, not one sixty-fourth: a catching layer keeps 1/64 of its budget, nested catches add 1/64 each); the attack is in the suite. (b) `expel` re-evaluates — `true` reinstates, unevaluable reverts; `challenge` is symmetric and reinstates on `true`; `REINSTATE` stays for judgment. Cascade acknowledged in the text: `ROSTER_LOST` is a pause with permissionless `resume`, contributions stop and the inactivity clock runs |
+| #4 Revinand | "The reference account stops acting once nobody is a member" held only for `ROLE`/`ANY_MEMBER` representatives; `ADDRESS`/`INITIATOR` kept acting after dissolution, so two swarms on the same account code recovered assets differently by authority kind | `isAuthorized` returns `false` for every kind in a `DISSOLVED` swarm; the account profile must state its post-dissolution rule on-chain (`recoveryAddress()`), independent of the `REPRESENT` kind, settable only by a representative before dissolution, frozen with the swarm; the reference account adds `recover`. Dissolution stays permissionless; distribution by representation happens in `CONCLUDING`. `ISwarmAccount` id changed |
+
+### 11.4 Deferred [Open]
 
 Case C (standing committee with `succeed()`); bonds and penalties; matchmaking (`sai.origin.*` extension kinds); cross-chain members and obligations; a normative joint-action binding to ERC-8001; outcome feedback scale into ERC-8004 reputation.
 
 ## 12. Next rounds
 
-Round 3: Magicians thread and `discussions-to`; filing branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; pull request under the placeholder number; number assignment and rename; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.
+Round 3 (done 2026-10-18): Magicians thread 29998 and `discussions-to`; fork branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; PR #2081 under the placeholder number; revision 2 from the first review round. Next: number assignment and rename; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.

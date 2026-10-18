@@ -122,14 +122,14 @@ contract SAIDecisionTest is SAIScenarioBase {
         bytes32 issueId = adapter.open(id, T.DecisionPoint.ADMIT, admitCall(w1), roster3());
         vote(issueId, roster2(c1, c2), true);
         vm.prank(coord);
-        reg.amend(id, CHARTER2, "uri2", bytes32(0), true);
+        reg.amend(id, CHARTER2, "uri2", bytes32(0), bytes32(0), true);
         vm.expectRevert("SAIDecision: commitments changed");
         adapter.execute(issueId);
         // a minor amendment would not have blocked it
         bytes32 issue2 = adapter.open(id, T.DecisionPoint.ADMIT, admitCall(w1), roster3());
         vote(issue2, roster2(c1, c3), true);
         vm.prank(coord);
-        reg.amend(id, keccak256("charter v3"), "uri3", bytes32(0), false);
+        reg.amend(id, keccak256("charter v3"), "uri3", bytes32(0), bytes32(0), false);
         adapter.execute(issue2);
         // w1 accepted v1 only: admitted, but completion waits for its acceptance of the current commitment
         assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.CANDIDATE));

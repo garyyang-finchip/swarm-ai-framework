@@ -44,7 +44,7 @@ contract SAICaseBTest is SAIScenarioBase {
         o.acceptanceAuthority = judge; // a verifier contract in production; an account here
 
         vm.prank(coord);
-        id = reg.form(spec, CHARTER1, "ipfs://charter-b", bytes32(0), origin(), o);
+        id = reg.form(spec, CHARTER1, COMMIT1, "ipfs://charter-b", bytes32(0), origin(), o);
     }
 
     function test_caseB_endToEnd() public {

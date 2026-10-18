@@ -42,7 +42,7 @@ contract SAICaseATest is SAIScenarioBase {
         o.obligation = T.ExternalRef({chainId: block.chainid, target: address(task), id: tokenId});
 
         vm.prank(coord);
-        id = reg.form(spec, CHARTER1, "ipfs://charter-a", bytes32(0),
+        id = reg.form(spec, CHARTER1, COMMIT1, "ipfs://charter-a", bytes32(0),
                       T.Origin({kind: keccak256("sai.origin.task"), ref: keccak256(abi.encode(block.chainid, address(task), tokenId))}), o);
     }
 
@@ -65,7 +65,7 @@ contract SAICaseATest is SAIScenarioBase {
         assertEq(uint8(state(id)), uint8(T.LifecycleState.ACTIVE));
 
         // --- the swarm account: fulfiller of record on the tender
-        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id);
+        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id, address(0));
         vm.prank(coord);
         reg.setAccount(id, address(acct));
 
@@ -110,16 +110,24 @@ contract SAICaseATest is SAIScenarioBase {
         vm.prank(coord);
         acct.execute(w1, 0.7 ether, "");
         assertEq(w1.balance, 0.7 ether);
+        // the charter names who may recover what is left after dissolution; set while the swarm lives
+        vm.prank(coord);
+        acct.setRecoveryAddress(coord);
         // --- dissolution after the settlement window, by anyone; the ledger exits lazily
         vm.warp(block.timestamp + DAY + 1);
         vm.prank(stranger);
         reg.dissolve(id);
         assertEq(uint8(state(id)), uint8(T.LifecycleState.DISSOLVED));
         assertEq(uint8(exitReason(id, w1)), uint8(T.ExitReason.SWARM_DISSOLVED));
-        // the account still answers to the ledger: nobody is a member of a dissolved swarm
+        // the registry authorizes nobody in a dissolved swarm: no representative acts through the account
         vm.prank(coord);
         vm.expectRevert(SwarmAccount.SwarmAccount_NotRepresentative.selector);
         acct.execute(coord, 0.3 ether, "");
+        // what is left goes out only through the account's own recovery rule
+        vm.prank(coord);
+        acct.recover(coord, 0.3 ether, "");
+        assertEq(coord.balance, 0.3 ether);
+        assertEq(address(acct).balance, 0);
     }
 
     function test_caseA_tenderCancelledAbandonsTheSwarm() public {
@@ -132,7 +140,7 @@ contract SAICaseATest is SAIScenarioBase {
         vote(issue, roster2(c1, c2), true);
         council.execute(issue);
         vm.prank(coord); reg.activate(id);
-        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id);
+        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id, address(0));
         vm.prank(coord); reg.setAccount(id, address(acct));
 
         vm.prank(sponsor);
@@ -151,7 +159,7 @@ contract SAICaseATest is SAIScenarioBase {
         vote(issue, roster2(c1, c2), true);
         council.execute(issue);
         vm.prank(coord); reg.activate(id);
-        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id);
+        acct = new SwarmAccount(ISwarmRegistry(address(reg)), id, address(0));
         vm.prank(coord); reg.setAccount(id, address(acct));
 
         vm.warp(block.timestamp + 61 * DAY);

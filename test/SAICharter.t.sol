@@ -98,12 +98,12 @@ contract SAICharterTest is SAIBase {
         bytes32 id = formAndActivate();
         vm.prank(stranger);
         vm.expectRevert(SAI_NotAuthorized.selector);
-        reg.amend(id, CHARTER2, "uri2", bytes32(0), false);
+        reg.amend(id, CHARTER2, "uri2", bytes32(0), bytes32(0), false);
         vm.prank(coord);
         vm.expectRevert(SAI_SameCharter.selector);
-        reg.amend(id, CHARTER1, "uri2", bytes32(0), false);
+        reg.amend(id, CHARTER1, "uri2", bytes32(0), bytes32(0), false);
         vm.prank(coord);
-        reg.amend(id, CHARTER2, "uri2", bytes32(0), false);
+        reg.amend(id, CHARTER2, "uri2", bytes32(0), bytes32(0), false);
         T.Swarm memory s = reg.getSwarm(id);
         assertEq(s.charterVersion, 2);
         assertEq(s.commitmentVersion, 1);
@@ -138,7 +138,7 @@ contract SAICharterTest is SAIBase {
         assertEq(uint8(status(id, w3)), uint8(T.MemberStatus.ACTIVE));
 
         vm.prank(coord);
-        reg.amend(id, CHARTER2, "uri2", keccak256("objective v2"), true);
+        reg.amend(id, CHARTER2, "uri2", keccak256("objective v2"), bytes32(0), true);
         T.Swarm memory s = reg.getSwarm(id);
         assertEq(s.commitmentVersion, 2);
         assertEq(s.exitWindowUntil, uint64(block.timestamp) + 2 * DAY);
@@ -199,12 +199,109 @@ contract SAICharterTest is SAIBase {
         reg.admit(id, w1, ROLE_WORKER);
     }
 
+    function test_commitmentOrObjectiveChangeIsMaterialByConstruction() public {
+        bytes32 id = formAndActivate();
+        assertEq(reg.getSwarm(id).commitmentHash, COMMIT1);
+        // the authority calls a changed allocation "minor": the registry does not let it
+        vm.prank(coord);
+        vm.expectEmit(true, true, false, true, address(reg));
+        emit CharterAmended(id, 2, 2, true, CHARTER2, OBJECTIVE1, COMMIT2, "uri2",
+                            uint64(block.timestamp) + 2 * DAY, coord);
+        reg.amend(id, CHARTER2, "uri2", bytes32(0), COMMIT2, false);
+        T.Swarm memory s = reg.getSwarm(id);
+        assertEq(s.commitmentHash, COMMIT2);
+        assertEq(s.commitmentVersion, 2);
+        assertEq(s.exitWindowUntil, uint64(block.timestamp) + 2 * DAY);
+        // a textual change naming the same commitment and objective stays minor
+        vm.warp(block.timestamp + 3 * DAY);
+        vm.prank(coord);
+        reg.amend(id, keccak256("charter v3"), "uri3", OBJECTIVE1, COMMIT2, false);
+        s = reg.getSwarm(id);
+        assertEq(s.charterVersion, 3);
+        assertEq(s.commitmentVersion, 2);
+        // a changed objective is material whatever the flag says
+        vm.prank(coord);
+        reg.amend(id, keccak256("charter v4"), "uri4", keccak256("objective v2"), bytes32(0), false);
+        s = reg.getSwarm(id);
+        assertEq(s.commitmentVersion, 3);
+        assertEq(reg.objectiveOf(id).version, 4);
+        // the flag is one-way: a declared material change with unchanged hashes still opens the window
+        vm.warp(block.timestamp + 3 * DAY);
+        vm.prank(coord);
+        reg.amend(id, keccak256("charter v5"), "uri5", bytes32(0), bytes32(0), true);
+        s = reg.getSwarm(id);
+        assertEq(s.commitmentVersion, 4);
+        assertEq(s.commitmentHash, COMMIT2);
+    }
+
+    function test_nobodyIsAuthorizedAfterDissolution() public {
+        bytes32 id = formAndActivate(); // every slot ADDRESS(coord) except REPRESENT = ROLE coordinator
+        assertTrue(reg.isAuthorized(id, T.DecisionPoint.AMEND, coord));
+        assertTrue(reg.isAuthorized(id, T.DecisionPoint.REPRESENT, coord));
+        vm.prank(coord);
+        reg.conclude(id, T.OutcomeType.ACHIEVED, keccak256("r"));
+        assertTrue(reg.isAuthorized(id, T.DecisionPoint.AMEND, coord)); // concluding: still held
+        vm.prank(coord);
+        reg.dissolve(id);
+        assertFalse(reg.isAuthorized(id, T.DecisionPoint.AMEND, coord));     // ADDRESS kind
+        assertFalse(reg.isAuthorized(id, T.DecisionPoint.REPRESENT, coord)); // ROLE kind
+        vm.prank(coord);
+        vm.expectRevert(SAI_WrongState.selector);
+        reg.transferAuthority(id, T.DecisionPoint.AMEND, w1);
+    }
+
+    function test_accountRecoveryAfterDissolution() public {
+        bytes32 id = formAndActivate();
+        SwarmAccount acct = new SwarmAccount(reg, id, address(0));
+        vm.prank(coord);
+        reg.setAccount(id, address(acct));
+        vm.deal(address(acct), 1 ether);
+        assertEq(acct.recoveryAddress(), address(0));
+        // only a representative names the recovery address, and only before dissolution
+        vm.prank(w1);
+        vm.expectRevert(SwarmAccount.SwarmAccount_NotRepresentative.selector);
+        acct.setRecoveryAddress(judge);
+        vm.prank(coord);
+        acct.setRecoveryAddress(judge);
+        assertEq(acct.recoveryAddress(), judge);
+        // recovery is not a path while the swarm lives
+        vm.prank(judge);
+        vm.expectRevert(SwarmAccount.SwarmAccount_NotDissolved.selector);
+        acct.recover(judge, 1 ether, "");
+        vm.prank(coord);
+        reg.conclude(id, T.OutcomeType.ACHIEVED, keccak256("r"));
+        vm.prank(coord);
+        acct.execute(w1, 0.4 ether, ""); // settlement in CONCLUDING through execute
+        vm.prank(coord);
+        reg.dissolve(id);
+        // dissolved: no representative of any kind acts; the recovery rule is frozen; recovery only
+        vm.prank(coord);
+        vm.expectRevert(SwarmAccount.SwarmAccount_NotRepresentative.selector);
+        acct.execute(w1, 0.1 ether, "");
+        vm.prank(coord);
+        vm.expectRevert(SwarmAccount.SwarmAccount_Dissolved.selector);
+        acct.setRecoveryAddress(coord);
+        vm.prank(stranger);
+        vm.expectRevert(SwarmAccount.SwarmAccount_NotRecovery.selector);
+        acct.recover(stranger, 0.6 ether, "");
+        vm.prank(judge);
+        acct.recover(judge, 0.6 ether, "");
+        assertEq(judge.balance, 0.6 ether);
+        assertEq(address(acct).balance, 0);
+        // an account deployed without a recovery address keeps what is left
+        SwarmAccount closed = new SwarmAccount(reg, id, address(0));
+        vm.deal(address(closed), 1 ether);
+        vm.prank(address(0));
+        vm.expectRevert(SwarmAccount.SwarmAccount_NotRecovery.selector);
+        closed.recover(stranger, 1 ether, "");
+    }
+
     // ------------------------------------------------------------------ account
 
     function test_setAccountOnceAndBindingChecked() public {
         bytes32 id = formAndActivate();
-        SwarmAccount acct = new SwarmAccount(reg, id);
-        SwarmAccount other = new SwarmAccount(reg, keccak256("other"));
+        SwarmAccount acct = new SwarmAccount(reg, id, address(0));
+        SwarmAccount other = new SwarmAccount(reg, keccak256("other"), address(0));
         vm.prank(coord);
         vm.expectRevert(SAI_AccountMismatch.selector);
         reg.setAccount(id, address(other));
@@ -297,4 +394,7 @@ contract SAICharterTest is SAIBase {
     event Contribution(bytes32 indexed swarmId, address indexed contributor, uint32 indexed phase,
                        bytes32 contributionHash, string uri, uint32 charterVersion, bool isMember, bool whileSuspended);
     event MemberExited(bytes32 indexed swarmId, address indexed account, T.ExitReason reason, bool onAmendment, address by);
+    event CharterAmended(bytes32 indexed swarmId, uint32 indexed charterVersion, uint32 commitmentVersion, bool material,
+                         bytes32 charterHash, bytes32 objectiveHash, bytes32 commitmentHash, string charterURI,
+                         uint64 exitUntil, address by);
 }

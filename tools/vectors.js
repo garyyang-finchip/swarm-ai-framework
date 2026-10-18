@@ -168,12 +168,13 @@ const packs = ["swarm-pack-cooperative-tender.json", "swarm-pack-two-phase-tende
     canonicalSha256: sha256(canonical),
     charterHash: sha256(canonical),
     objectiveHash: sha256(jcs(root.objective)),
+    commitmentHash: root.commitment ? sha256(jcs(root.commitment)) : "0x" + "00".repeat(32),
     phaseDescriptorHashes: root.mode.phases.map((p) => sha256(jcs(p))),
     canonicalPrefix: canonical.slice(0, 120),
   };
 });
 const charterHash = {
-  description: "charterHash = SHA-256 over the RFC 8785 (JCS) canonical form of the Swarm Pack root; objectiveHash = SHA-256 over the canonical form of the `objective` member; a phase's descriptorHash = SHA-256 over the canonical form of the matching `mode.phases` member. Computed from the example packs under assets/erc-sai/examples.",
+  description: "charterHash = SHA-256 over the RFC 8785 (JCS) canonical form of the Swarm Pack root; objectiveHash = SHA-256 over the canonical form of the `objective` member; commitmentHash = SHA-256 over the canonical form of the `commitment` member (zero when absent); a phase's descriptorHash = SHA-256 over the canonical form of the matching `mode.phases` member. Computed from the example packs under assets/erc-sai/examples.",
   vectors: packs,
 };
 fs.writeFileSync(path.join(OUT, "charter-hash.json"), JSON.stringify(charterHash, null, 2) + "\n");

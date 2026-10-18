@@ -20,6 +20,28 @@ contract SwitchableModule {
     }
 }
 
+/// A registry read that needs a fixed, sizeable amount of gas (stands in for a trust or identity
+/// registry lookup) and answers true.
+contract CostlyOracle {
+    uint256 public immutable rounds;
+    constructor(uint256 rounds_) { rounds = rounds_; }
+    function check(address) external view returns (bool) {
+        bytes32 x;
+        for (uint256 i = 0; i < rounds; i++) x = keccak256(abi.encode(x, i));
+        return x != bytes32(0);
+    }
+}
+
+/// The common third-party pattern Zealynx described: every registry read wrapped in try/catch,
+/// `false` on failure. A caller that starves the inner read can make it answer `false`.
+contract CatchingModule {
+    CostlyOracle public immutable oracle;
+    constructor(CostlyOracle o) { oracle = o; }
+    function isEligible(bytes32, bytes32, address a) external view returns (bool) {
+        try oracle.check(a) returns (bool v) { return v; } catch { return false; }
+    }
+}
+
 /// Minimal ERC-1271 account controlled by one EOA key.
 contract Wallet1271 {
     address public immutable signer;
@@ -243,6 +265,105 @@ contract SAIMembershipTest is SAIBase {
         (ev, ok) = reg.challenge(id, w1);
         assertTrue(ev); assertFalse(ok);
         assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+    }
+
+    function test_challengeGasStarvedCatchingModuleIsUnevaluable() public {
+        // an inner read costing a few million gas: a composite over several registries, say
+        CatchingModule mod = new CatchingModule(new CostlyOracle(15_000));
+        T.SwarmSpec memory spec = defaultSpec();
+        spec.roles[1].eligibility = address(mod);
+        bytes32 id = formWith(spec, defaultObjective());
+        admitAndAccept(id, coord, ROLE_COORD);
+        admitAndAccept(id, w1, ROLE_WORKER);
+        reg.activate(id);
+        // with ample gas the module evaluates and the member is eligible
+        (bool ev, bool ok) = reg.challenge{gas: 12_000_000}(id, w1);
+        assertTrue(ev && ok);
+        // a challenger sweeps gas limits: the inner read runs out for some of them, the module
+        // answers false with one sixty-fourth of its budget kept, and that is enough for the registry
+        // to record a suspension; the registry treats every such answer as unevaluable instead
+        uint256 starved;
+        for (uint256 g = 300_000; g <= 4_000_000; g += 100_000) {
+            vm.prank(stranger);
+            (bool ok2, bytes memory ret) = address(reg).call{gas: g}(abi.encodeCall(reg.challenge, (id, w1)));
+            if (!ok2) continue; // the registry itself ran out of gas: no answer at all
+            (bool ev2, bool el2) = abi.decode(ret, (bool, bool));
+            if (!ev2) starved++;
+            else assertTrue(el2, "an evaluated answer under starvation would be wrong");
+            assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.ACTIVE), "honest member suspended");
+        }
+        assertGt(starved, 0, "the sweep never hit the starved window");
+    }
+
+    function test_challengeReinstatesOnEvidence() public {
+        SwitchableModule mod = new SwitchableModule();
+        mod.setAllowed(w1, true);
+        T.SwarmSpec memory spec = defaultSpec();
+        spec.roles[1].eligibility = address(mod);
+        bytes32 id = formWith(spec, defaultObjective());
+        admitAndAccept(id, coord, ROLE_COORD);
+        admitAndAccept(id, w1, ROLE_WORKER);
+        reg.activate(id);
+        mod.setAllowed(w1, false);
+        reg.challenge(id, w1);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+        // still false: evaluated, stays suspended
+        vm.prank(stranger);
+        (bool ev, bool ok) = reg.challenge(id, w1);
+        assertTrue(ev); assertFalse(ok);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+        // unevaluable: stays suspended
+        mod.setReverting(true);
+        (ev, ok) = reg.challenge(id, w1);
+        assertFalse(ev);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+        // the identity comes back: anyone's challenge reinstates, no authority needed
+        mod.setReverting(false);
+        mod.setAllowed(w1, true);
+        vm.prank(stranger);
+        (ev, ok) = reg.challenge(id, w1);
+        assertTrue(ev && ok);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.ACTIVE));
+        (uint32 a, uint32 su,) = reg.memberCount(id);
+        assertEq(a, 2); assertEq(su, 0);
+        // a suspension on judgment is not a question for the module
+        vm.prank(coord);
+        reg.suspendMember(id, w1);
+        vm.expectRevert(SAI_NotMember.selector);
+        reg.challenge(id, w1);
+    }
+
+    function test_expelReevaluatesTheModule() public {
+        SwitchableModule mod = new SwitchableModule();
+        mod.setAllowed(w1, true);
+        T.SwarmSpec memory spec = defaultSpec();
+        spec.roles[1].eligibility = address(mod);
+        bytes32 id = formWith(spec, defaultObjective());
+        admitAndAccept(id, coord, ROLE_COORD);
+        admitAndAccept(id, w1, ROLE_WORKER);
+        reg.activate(id);
+        mod.setAllowed(w1, false);
+        reg.challenge(id, w1);
+        vm.warp(block.timestamp + DAY + 1);
+        // the identity lapsed for a day and came back; nobody reinstated in time
+        mod.setAllowed(w1, true);
+        vm.prank(stranger);
+        reg.expel(id, w1); // re-adjudicates on current evidence: reinstated, not expelled
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.ACTIVE));
+        assertEq(reg.seatEpochOf(id, w1), 0);
+        // lapses again; an unevaluable module decides nothing and says so
+        mod.setAllowed(w1, false);
+        reg.challenge(id, w1);
+        vm.warp(block.timestamp + DAY + 1);
+        mod.setReverting(true);
+        vm.expectRevert(SAI_Unevaluable.selector);
+        reg.expel(id, w1);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+        // still ineligible on evidence: expelled
+        mod.setReverting(false);
+        vm.prank(stranger);
+        reg.expel(id, w1);
+        assertEq(uint8(exitReason(id, w1)), uint8(T.ExitReason.INELIGIBLE));
     }
 
     // ------------------------------------------------------------------ departure, removal, substitution
