@@ -2,7 +2,7 @@
 
 Category: ERCs. Title: **[Draft ERC] Swarm AI Framework — registry and charter model for purpose-bound agent swarms**
 
-Replace `<repo>` with the repository URL and `<pr>` with the pull request once filed; set the `discussions-to` header of the ERC to this thread's URL.
+Posted 2026-10-18 as Ethereum Magicians topic 29998 (`https://ethereum-magicians.org/t/draft-erc-swarm-ai-framework-registry-and-charter-model-for-purpose-bound-agent-swarms/29998`), which is the ERC's `discussions-to`. The pull request link is added to the first post once the PR is open; after the editors assign a number the topic is retitled `ERC-NNNN: Swarm AI Framework`.
 
 ---
 
@@ -12,7 +12,9 @@ We propose a registry and charter model through which autonomous agents — and 
 
 Agent standards so far cover the individual (identity, reputation, validation), the act (one coordinated action among fixed participants), the decision (policies, bodies, finality) and the job (one task, one provider). None of them says what a group of agents *is*: who is inside now and under which commitment, why the group exists, how it is organized, and when it stops existing. Every pipeline that needs that today redefines it in application code or in a chat protocol, and no counterparty — a task tender, a treasury, an indexer — can read it.
 
-Draft: `<repo>/blob/main/ERCS/erc-sai.md`. Reference implementation, schemas, vectors and tests: `<repo>`. Pull request: `<pr>`.
+Draft text: https://github.com/garyyang-finchip/swarm-ai-framework/blob/main/ERCS/erc-sai.md
+Reference implementation, schemas, vectors and tests: https://github.com/garyyang-finchip/swarm-ai-framework
+ethereum/ERCs pull request: to be added after filing.
 
 ## What the ERC fixes
 

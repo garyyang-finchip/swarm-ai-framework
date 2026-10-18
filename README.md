@@ -36,8 +36,7 @@ docs/                             design memo v0.2 (decisions log), Magicians po
 ## Build and test
 
 ```bash
-git submodule update --init                     # lib/forge-std v1.17.0 (a fresh clone; the release archive ships it)
-forge build --sizes                             # solc 0.8.24, via-IR, optimizer runs = 1
+forge build --sizes                             # solc 0.8.24, via-IR, optimizer runs = 1; lib/forge-std v1.17.0 is vendored
 forge test                                      # 85 tests
 npm install && node tools/vectors.js            # regenerate assets/erc-sai/vectors (ethers 6.13.4)
 python3 scripts/make-filing-package.py --allow-tbd   # dry run of the filing package and lints
@@ -75,7 +74,7 @@ ERC-165 identifiers: `ISwarmRegistry` `0xb5f5bb24`, `IEligibility` `0xd0ede3d8`,
 
 ## Next steps
 
-Ethereum Magicians thread (`docs/magicians-post.md`), then `discussions-to`; filing branch `add-erc-sai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; Sepolia evidence run of Case A and Case B (`deployments/`); Case C (standing committee with `succeed()`) in a later round.
+Ethereum Magicians thread (`docs/magicians-post.md`), then `discussions-to`; filing branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; Sepolia evidence run of Case A and Case B (`deployments/`); Case C (standing committee with `succeed()`) in a later round.
 
 ## License
 

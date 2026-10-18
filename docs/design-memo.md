@@ -231,4 +231,4 @@ Case C (standing committee with `succeed()`); bonds and penalties; matchmaking (
 
 ## 12. Next rounds
 
-Round 3: Magicians thread and `discussions-to`; filing branch `add-erc-sai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; pull request under the placeholder number; number assignment and rename; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.
+Round 3: Magicians thread and `discussions-to`; filing branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; pull request under the placeholder number; number assignment and rename; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.
