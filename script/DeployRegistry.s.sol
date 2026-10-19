@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {SwarmRegistry} from "../assets/erc-sai/contracts/SwarmRegistry.sol";
+import {SwarmRegistry} from "../assets/erc-8447/contracts/SwarmRegistry.sol";
 
 /// Deploys a SwarmRegistry with no resource adapters and records the addresses under
 /// deployments/<chainId>.json. Foundry deploys and links the external libraries

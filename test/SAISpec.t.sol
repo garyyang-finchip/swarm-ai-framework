@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
 
 contract SAISpecTest is SAIBase {
     function expectFormRevert(T.SwarmSpec memory spec, bytes4 err) internal {

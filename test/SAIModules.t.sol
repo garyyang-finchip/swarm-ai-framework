@@ -2,16 +2,16 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {IEligibility} from "../assets/erc-sai/contracts/interfaces/IEligibility.sol";
-import {AllowlistEligibility} from "../assets/erc-sai/contracts/modules/AllowlistEligibility.sol";
-import {CompositeEligibility} from "../assets/erc-sai/contracts/modules/CompositeEligibility.sol";
-import {ERC8004Eligibility} from "../assets/erc-sai/contracts/modules/ERC8004Eligibility.sol";
-import {AssertionLevelEligibility} from "../assets/erc-sai/contracts/modules/AssertionLevelEligibility.sol";
-import {IdentityStateEligibility} from "../assets/erc-sai/contracts/modules/IdentityStateEligibility.sol";
-import {IERC8004Identity} from "../assets/erc-sai/contracts/modules/interfaces/IERC8004Identity.sol";
-import {ITrustAssertionRegistry} from "../assets/erc-sai/contracts/modules/interfaces/ITrustAssertionRegistry.sol";
-import {IAddressAnchoredIdentity} from "../assets/erc-sai/contracts/modules/interfaces/IAddressAnchoredIdentity.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {IEligibility} from "../assets/erc-8447/contracts/interfaces/IEligibility.sol";
+import {AllowlistEligibility} from "../assets/erc-8447/contracts/modules/AllowlistEligibility.sol";
+import {CompositeEligibility} from "../assets/erc-8447/contracts/modules/CompositeEligibility.sol";
+import {ERC8004Eligibility} from "../assets/erc-8447/contracts/modules/ERC8004Eligibility.sol";
+import {AssertionLevelEligibility} from "../assets/erc-8447/contracts/modules/AssertionLevelEligibility.sol";
+import {IdentityStateEligibility} from "../assets/erc-8447/contracts/modules/IdentityStateEligibility.sol";
+import {IERC8004Identity} from "../assets/erc-8447/contracts/modules/interfaces/IERC8004Identity.sol";
+import {ITrustAssertionRegistry} from "../assets/erc-8447/contracts/modules/interfaces/ITrustAssertionRegistry.sol";
+import {IAddressAnchoredIdentity} from "../assets/erc-8447/contracts/modules/interfaces/IAddressAnchoredIdentity.sol";
 
 /// Minimal identity registry: owner and wallet per agent id.
 contract IdentityMock is IERC8004Identity {

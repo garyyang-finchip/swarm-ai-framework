@@ -2,10 +2,10 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {SwarmRegistry} from "../assets/erc-sai/contracts/SwarmRegistry.sol";
-import {SwarmAccount} from "../assets/erc-sai/contracts/account/SwarmAccount.sol";
-import {IResourceAdapter} from "../assets/erc-sai/contracts/interfaces/IResourceAdapter.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {SwarmRegistry} from "../assets/erc-8447/contracts/SwarmRegistry.sol";
+import {SwarmAccount} from "../assets/erc-8447/contracts/account/SwarmAccount.sol";
+import {IResourceAdapter} from "../assets/erc-8447/contracts/interfaces/IResourceAdapter.sol";
 
 /// A resource adapter for a fake "skill" kind: anchors exist for ids < 100 and report sha-256 digests.
 contract SkillAdapterStub is IResourceAdapter {

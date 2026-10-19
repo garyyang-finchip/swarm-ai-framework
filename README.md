@@ -1,8 +1,8 @@
-# Swarm AI Framework (SAI)
+# ERC-8447: Swarm AI Framework (SAI)
 
 > Agents form, bound, run and dissolve purpose-bound swarms — collectives with an explicit membership boundary, an objective with attainment rules and a declared collaboration structure — as one interoperable on-chain record.
 
-**Status:** reference v0.3 (2026-10-19), revision 2 of the draft. Filed as ethereum/ERCs PR #2081 (working number `9999`); discussion at Ethereum Magicians topic 29998. Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 91 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
+**Status:** reference v0.3 (2026-10-19), revision 2 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 91 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
 
 ## What it is
 
@@ -21,13 +21,13 @@ A minimal interoperable kernel for agent swarms plus normative-optional profiles
 ## Repository
 
 ```
-ERCS/erc-sai.md                   the proposal (working number 9999; eipw 0 findings under the ERCs config)
-assets/erc-sai/contracts/         SAITypes, SAIErrors, SwarmRegistry + libraries/ (LifecycleLib, MembershipLib,
+ERCS/erc-8447.md                  the proposal (ERC-8447; eipw 0 findings under the ERCs config)
+assets/erc-8447/contracts/         SAITypes, SAIErrors, SwarmRegistry + libraries/ (LifecycleLib, MembershipLib,
                                   ResourceLib, SpecValidator, SAIStore, SignatureChecker), interfaces/, account/,
                                   adapters/ (SwarmDecisionAdapter, SwarmTenderAdapter), modules/ (five eligibility modules)
-assets/erc-sai/schemas/           swarm-spec.schema.json (mirror of the struct), swarm-pack.schema.json (the charter root)
-assets/erc-sai/examples/          two packs: a tender-bound cooperative swarm; a two-phase tender (open bidding, selected execution)
-assets/erc-sai/vectors/           spec-hash, join-digest, charter-hash, term-ids, interface-ids (tools/vectors.js, ethers v6)
+assets/erc-8447/schemas/           swarm-spec.schema.json (mirror of the struct), swarm-pack.schema.json (the charter root)
+assets/erc-8447/examples/          two packs: a tender-bound cooperative swarm; a two-phase tender (open bidding, selected execution)
+assets/erc-8447/vectors/           spec-hash, join-digest, charter-hash, term-ids, interface-ids (tools/vectors.js, ethers v6)
 test/                             Foundry suite (91 tests); test/fixtures/ vendors the ERC-8436 registries and the task tender kernel
 tools/vectors.js                  regenerates the vectors with an independent ABI coder and canonicalizer
 scripts/make-filing-package.py    builds and lints the ethereum/ERCs submission package (ERCS/erc-N.md + assets/erc-N/)
@@ -39,7 +39,7 @@ docs/                             design memo (decisions log), Magicians post an
 ```bash
 forge build --sizes                             # solc 0.8.24, via-IR, optimizer runs = 1; lib/forge-std v1.17.0 is vendored
 forge test                                      # 91 tests
-npm install && node tools/vectors.js            # regenerate assets/erc-sai/vectors (ethers 6.13.4)
+npm install && node tools/vectors.js            # regenerate assets/erc-8447/vectors (ethers 6.13.4)
 python3 scripts/make-filing-package.py --allow-tbd   # dry run of the filing package and lints
 ```
 
@@ -75,7 +75,7 @@ ERC-165 identifiers: `ISwarmRegistry` `0x085203a4`, `IEligibility` `0xd0ede3d8`,
 
 ## Next steps
 
-Editor review of PR #2081 and number assignment (then `scripts/make-filing-package.py --number N` and the rename); the Sepolia evidence run of Case A and Case B (`deployments/`); Case C (standing committee with `succeed()`) in a later round.
+Editor review and merge of PR #2081 (ERC-8447 files on the branch); the Sepolia evidence run of Case A and Case B (`deployments/`); Case C (standing committee with `succeed()`) in a later round.
 
 ## License
 

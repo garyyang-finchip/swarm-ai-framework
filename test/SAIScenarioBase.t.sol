@@ -2,14 +2,14 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
-import {SwarmDecisionAdapter} from "../assets/erc-sai/contracts/adapters/SwarmDecisionAdapter.sol";
-import {SwarmTenderAdapter} from "../assets/erc-sai/contracts/adapters/SwarmTenderAdapter.sol";
-import {IACDFRegistry} from "../assets/erc-sai/contracts/adapters/interfaces/IACDFRegistry.sol";
-import {ITaskTenderKernel} from "../assets/erc-sai/contracts/adapters/interfaces/ITaskTenderKernel.sol";
-import {ACDFTypes as A} from "../assets/erc-sai/contracts/adapters/interfaces/ACDFTypes.sol";
-import {SwarmAccount} from "../assets/erc-sai/contracts/account/SwarmAccount.sol";
-import {AllowlistEligibility} from "../assets/erc-sai/contracts/modules/AllowlistEligibility.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
+import {SwarmDecisionAdapter} from "../assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol";
+import {SwarmTenderAdapter} from "../assets/erc-8447/contracts/adapters/SwarmTenderAdapter.sol";
+import {IACDFRegistry} from "../assets/erc-8447/contracts/adapters/interfaces/IACDFRegistry.sol";
+import {ITaskTenderKernel} from "../assets/erc-8447/contracts/adapters/interfaces/ITaskTenderKernel.sol";
+import {ACDFTypes as A} from "../assets/erc-8447/contracts/adapters/interfaces/ACDFTypes.sol";
+import {SwarmAccount} from "../assets/erc-8447/contracts/account/SwarmAccount.sol";
+import {AllowlistEligibility} from "../assets/erc-8447/contracts/modules/AllowlistEligibility.sol";
 // real kernels, vendored unmodified
 import {ACDFPolicyRegistry} from "./fixtures/acdf/ACDFPolicyRegistry.sol";
 import {ACDFRegistry} from "./fixtures/acdf/ACDFRegistry.sol";

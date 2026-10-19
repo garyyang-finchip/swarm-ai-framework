@@ -1,5 +1,5 @@
 [profile.default]
-src = "assets/erc-sai/contracts"
+src = "assets/erc-8447/contracts"
 test = "test"
 out = "out"
 libs = ["lib"]
@@ -9,7 +9,7 @@ optimizer_runs = 1
 via_ir = true
 
 fs_permissions = [
-  { access = "read", path = "./assets/erc-sai/vectors" },
+  { access = "read", path = "./assets/erc-8447/vectors" },
   { access = "read-write", path = "./deployments" },
 ]
 

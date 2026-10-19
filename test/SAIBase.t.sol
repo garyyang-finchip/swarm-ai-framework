@@ -2,10 +2,10 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
-import {SAITypes as T} from "../assets/erc-sai/contracts/SAITypes.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {SwarmRegistry} from "../assets/erc-sai/contracts/SwarmRegistry.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
+import {SAITypes as T} from "../assets/erc-8447/contracts/SAITypes.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {SwarmRegistry} from "../assets/erc-8447/contracts/SwarmRegistry.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
 
 /// Shared fixtures: a registry, a default single-phase gated spec with a coordinator and a worker
 /// role, every decision point held by `coord` (REPRESENT by the coordinator role), a judge as the

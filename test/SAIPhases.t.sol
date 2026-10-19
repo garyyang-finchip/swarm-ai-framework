@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
 
 contract SAIPhasesTest is SAIBase {
     /// bidding (OPEN, selfJoin bidders, 2-day input window) -> execution (CLOSED, SELECT) -> review (INHERIT) -> re-recruit (RECRUIT, GATED)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build and lint the ethereum/ERCs submission package for the Swarm AI Framework proposal.
 
-Source of truth: ERCS/erc-sai.md and assets/erc-sai/{contracts,schemas,examples,vectors}. The package
+Source of truth: ERCS/erc-8447.md and assets/erc-8447/{contracts,schemas,examples,vectors}. The package
 mirrors the ERCs repository layout:
 
     <out>/ERCS/erc-<N>.md
@@ -11,9 +11,9 @@ mirrors the ERCs repository layout:
     <out>/assets/erc-<N>/vectors/...
 
 Usage:
-    python3 scripts/make-filing-package.py --allow-tbd                       # dry run with the placeholder number
+    python3 scripts/make-filing-package.py                                   # the package under the assigned number
     python3 scripts/make-filing-package.py --discussions https://ethereum-magicians.org/t/<slug>/<id>
-    python3 scripts/make-filing-package.py --number 8NNN --discussions https://ethereum-magicians.org/t/<slug>/<id>
+    python3 scripts/make-filing-package.py --number 8NNN                     # re-file under another number (editors' call)
 
 The script exits non-zero when any lint fails. The lints approximate the ERCs CI (eipw + HTMLProofer) and
 the repository rule "no Chinese in any shipped file"; they are not a substitute for CI. For the real eipw,
@@ -22,9 +22,9 @@ run eipw-lint-js 0.11.0 with the ERCs repository's config/eipw.toml over the pro
 import argparse, os, re, shutil, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC_MD = os.path.join(ROOT, "ERCS", "erc-sai.md")
-SRC_ASSETS = os.path.join(ROOT, "assets", "erc-sai")
-PLACEHOLDER = "9999"   # working number carried by the source files until the editors assign one
+SRC_MD = os.path.join(ROOT, "ERCS", "erc-8447.md")
+SRC_ASSETS = os.path.join(ROOT, "assets", "erc-8447")
+NUMBER = "8447"        # the assigned number, carried by the source files
 ASSET_SUBDIRS = ("contracts", "schemas", "examples", "vectors")
 
 # Companion drafts not merged into ethereum/ERCs: a literal "ERC-N" would need a link to a file that does
@@ -121,8 +121,8 @@ def lint_erc(text, number, discussions_ok):
     sec = re.search(r"^## Security Considerations\n(.*?)^## Copyright", body, re.S | re.M)
     if sec and RFC2119.search(sec.group(1)):
         errors.append("RFC 2119 keywords inside Security Considerations")
-    if f"eip-{PLACEHOLDER}/" in body and number != PLACEHOLDER:
-        errors.append("placeholder asset links were not rewritten")
+    if f"eip-{NUMBER}/" in body and number != NUMBER:
+        errors.append("asset links were not rewritten to the filing number")
     if CJK.search(text):
         errors.append("CJK characters present in the ERC text")
     return errors, body
@@ -143,7 +143,7 @@ def check_asset_links(body, number, pkg_root):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--number", default=PLACEHOLDER, help="ERC number to file under (default: the 9999 placeholder)")
+    ap.add_argument("--number", default=NUMBER, help="ERC number to file under (default: the assigned number)")
     ap.add_argument("--discussions", default=None, help="Ethereum Magicians thread URL for discussions-to")
     ap.add_argument("--out", default=os.path.join(ROOT, "ercs-pr-package"))
     ap.add_argument("--allow-tbd", action="store_true", help="allow a placeholder discussions-to (dry runs only)")
@@ -154,7 +154,7 @@ def main():
     text = re.sub(r"^eip: \d+$", f"eip: {number}", text, count=1, flags=re.M)
     if args.discussions:
         text = re.sub(r"^discussions-to: .*$", f"discussions-to: {args.discussions}", text, count=1, flags=re.M)
-    text = text.replace(f"../assets/eip-{PLACEHOLDER}/", f"../assets/eip-{number}/")
+    text = text.replace(f"../assets/eip-{NUMBER}/", f"../assets/eip-{number}/")
 
     if os.path.isdir(args.out):
         shutil.rmtree(args.out)
@@ -164,13 +164,13 @@ def main():
         src = os.path.join(SRC_ASSETS, sub)
         if os.path.isdir(src):
             shutil.copytree(src, os.path.join(dst_assets, sub))
-    if number != PLACEHOLDER:
+    if number != NUMBER:
         for root, _, files in os.walk(dst_assets):
             for f in files:
                 if f.endswith((".json", ".sol", ".md")):
                     p = os.path.join(root, f)
                     t = open(p, encoding="utf-8").read()
-                    t2 = t.replace(f"eip-{PLACEHOLDER}", f"eip-{number}").replace(f"erc-{PLACEHOLDER}", f"erc-{number}")
+                    t2 = t.replace(f"eip-{NUMBER}", f"eip-{number}").replace(f"erc-{NUMBER}", f"erc-{number}")
                     if t2 != t:
                         open(p, "w", encoding="utf-8").write(t2)
     md_path = os.path.join(args.out, "ERCS", f"erc-{number}.md")

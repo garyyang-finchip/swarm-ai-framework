@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {SAIScenarioBase, T, A, SwarmDecisionAdapter, SwarmTenderAdapter, SwarmAccount, ITaskTenderKernel} from "./SAIScenarioBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
 
 /// Case A — a tender-bound cooperative swarm.
 /// A coordinator forms a swarm bound to a funded task tender; a council of three (2-of-3, through

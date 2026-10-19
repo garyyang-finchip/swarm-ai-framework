@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {AllowlistEligibility} from "../assets/erc-sai/contracts/modules/AllowlistEligibility.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {AllowlistEligibility} from "../assets/erc-8447/contracts/modules/AllowlistEligibility.sol";
 
 contract RevertingModule {
     function isEligible(bytes32, bytes32, address) external pure returns (bool) { revert("module down"); }

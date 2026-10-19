@@ -2,14 +2,14 @@
 pragma solidity ^0.8.24;
 
 import {SAIBase, T} from "./SAIBase.t.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
-import {IEligibility} from "../assets/erc-sai/contracts/interfaces/IEligibility.sol";
-import {ISwarmAccount} from "../assets/erc-sai/contracts/interfaces/ISwarmAccount.sol";
-import {IResourceAdapter} from "../assets/erc-sai/contracts/interfaces/IResourceAdapter.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
+import {IEligibility} from "../assets/erc-8447/contracts/interfaces/IEligibility.sol";
+import {ISwarmAccount} from "../assets/erc-8447/contracts/interfaces/ISwarmAccount.sol";
+import {IResourceAdapter} from "../assets/erc-8447/contracts/interfaces/IResourceAdapter.sol";
 
 /// Re-derives the vectors produced by tools/vectors.js (ethers v6) in Solidity.
 contract SAIVectorsTest is SAIBase {
-    string constant DIR = "assets/erc-sai/vectors/";
+    string constant DIR = "assets/erc-8447/vectors/";
 
     address constant COORD = 0x1111111111111111111111111111111111111111;
     address constant ADAPTER = 0x2222222222222222222222222222222222222222;

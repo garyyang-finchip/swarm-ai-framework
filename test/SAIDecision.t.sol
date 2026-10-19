@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {SAIScenarioBase, T, A, SwarmDecisionAdapter} from "./SAIScenarioBase.t.sol";
-import "../assets/erc-sai/contracts/SAIErrors.sol";
-import {ISwarmRegistry} from "../assets/erc-sai/contracts/interfaces/ISwarmRegistry.sol";
+import "../assets/erc-8447/contracts/SAIErrors.sol";
+import {ISwarmRegistry} from "../assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol";
 
 /// The decision adapter against the real ERC-8436 registries: a council of three (2-of-3) holds
 /// ADMIT and REMOVE; everything else is held by `coord`.

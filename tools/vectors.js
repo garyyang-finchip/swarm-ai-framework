@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Regenerates the deterministic vectors under assets/erc-sai/vectors with an independent ABI coder
+// Regenerates the deterministic vectors under assets/erc-8447/vectors with an independent ABI coder
 // (ethers v6). The Foundry suite test/SAIVectors.t.sol re-derives every value in Solidity.
 //
 //   npm install && node tools/vectors.js
@@ -10,8 +10,8 @@ const crypto = require("crypto");
 const { ethers } = require("ethers");
 
 const ROOT = path.resolve(__dirname, "..");
-const OUT = path.join(ROOT, "assets", "erc-sai", "vectors");
-const EXAMPLES = path.join(ROOT, "assets", "erc-sai", "examples");
+const OUT = path.join(ROOT, "assets", "erc-8447", "vectors");
+const EXAMPLES = path.join(ROOT, "assets", "erc-8447", "examples");
 fs.mkdirSync(OUT, { recursive: true });
 
 const id = (s) => ethers.id(s);
@@ -174,7 +174,7 @@ const packs = ["swarm-pack-cooperative-tender.json", "swarm-pack-two-phase-tende
   };
 });
 const charterHash = {
-  description: "charterHash = SHA-256 over the RFC 8785 (JCS) canonical form of the Swarm Pack root; objectiveHash = SHA-256 over the canonical form of the `objective` member; commitmentHash = SHA-256 over the canonical form of the `commitment` member (zero when absent); a phase's descriptorHash = SHA-256 over the canonical form of the matching `mode.phases` member. Computed from the example packs under assets/erc-sai/examples.",
+  description: "charterHash = SHA-256 over the RFC 8785 (JCS) canonical form of the Swarm Pack root; objectiveHash = SHA-256 over the canonical form of the `objective` member; commitmentHash = SHA-256 over the canonical form of the `commitment` member (zero when absent); a phase's descriptorHash = SHA-256 over the canonical form of the matching `mode.phases` member. Computed from the example packs under assets/erc-8447/examples.",
   vectors: packs,
 };
 fs.writeFileSync(path.join(OUT, "charter-hash.json"), JSON.stringify(charterHash, null, 2) + "\n");
