@@ -4,7 +4,7 @@ Version 0.3 — 2026-10-19 — status tags: [Decided] fixed for the proposal, [O
 
 ## 0. What this document is
 
-The mechanism memo behind `ERCS/erc-sai.md`. It records the three definitions the proposal rests on — formation and boundary, objective and attainment, collaboration modes — as an object model, a state machine and rules; the orthogonal classification of collaboration modes; the compatibility map to the surrounding standards; and, in Section 11, the decisions log: the twelve rulings taken on the v0.1 open questions, the items added from the advisory review, and the first review round of the Magicians thread (revision 2). The ERC text is normative; this memo explains why it says what it says. Where v0.1 differed, the v0.2 text wins.
+The mechanism memo behind `ERCS/erc-8447.md`. It records the three definitions the proposal rests on — formation and boundary, objective and attainment, collaboration modes — as an object model, a state machine and rules; the orthogonal classification of collaboration modes; the compatibility map to the surrounding standards; and, in Section 11, the decisions log: the twelve rulings taken on the v0.1 open questions, the items added from the advisory review, and the first review round of the Magicians thread (revision 2). The ERC text is normative; this memo explains why it says what it says. Where v0.1 differed, the v0.2 text wins.
 
 ## 1. Positioning
 
@@ -18,7 +18,7 @@ In four clauses: **the charter organizes the swarm; boundary and eligibility dec
 
 | Where | Name |
 |---|---|
-| ERC title | Swarm AI Framework (18 characters; no "standard") |
+| ERC title | Swarm AI Framework (18 characters; no "standard"); number ERC-8447 |
 | Abbreviation | SAI |
 | Identifier prefix | `sai.` — `keccak256("sai.role.<name>")`, `keccak256("sai.resource.<name>")`, `keccak256("sai.dp.<name>")`, `keccak256("sai.origin.<name>")`, `keccak256("sai.dimension.<d>")`, `keccak256("sai.<d>.<term>")` |
 | EIP-712 domain | name `SAI`, version `1` |
@@ -242,4 +242,4 @@ Case C (standing committee with `succeed()`); bonds and penalties; matchmaking (
 
 ## 12. Next rounds
 
-Round 3 (done 2026-10-18): Magicians thread 29998 and `discussions-to`; fork branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; PR #2081 under the placeholder number; revision 2 from the first review round. Next: number assignment and rename; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.
+Round 3 (done 2026-10-18): Magicians thread 29998 and `discussions-to`; fork branch `add-erc-swarm-ai` cut from `ethereum/ERCs` master with the package from `scripts/make-filing-package.py`; PR #2081 under the placeholder number; revision 2 from the first review round; number **ERC-8447** assigned 2026-10-19 and the files renamed (`ERCS/erc-8447.md`, `assets/erc-8447/`, links `../assets/eip-8447/`). Next: editor merge; Sepolia evidence run of Cases A and B with the deployment records under `deployments/`. Later: Case C; numbered references to the companion drafts once they merge.

@@ -46,7 +46,7 @@ The fixtures under `test/fixtures/` are unmodified copies of the ERC-8436 refere
 
 ## Vectors
 
-`node tools/vectors.js` regenerates `assets/erc-sai/vectors/`. Charter hashes are computed by the JavaScript canonicalizer in the tool and cross-checked by an independent Python canonicalizer; spec hashes by ethers v6 and re-derived by `abi.encode` in Solidity; interface identifiers by XOR over the compiled ABIs and by `type(I).interfaceId`.
+`node tools/vectors.js` regenerates `assets/erc-8447/vectors/`. Charter hashes are computed by the JavaScript canonicalizer in the tool and cross-checked by an independent Python canonicalizer; spec hashes by ethers v6 and re-derived by `abi.encode` in Solidity; interface identifiers by XOR over the compiled ABIs and by `type(I).interfaceId`.
 
 | Vector | Values |
 |---|---|
@@ -58,7 +58,7 @@ The fixtures under `test/fixtures/` are unmodified copies of the ERC-8436 refere
 
 ## Lint
 
-- `eipw` 0.11.0 under the ERCs config over `ERCS/erc-sai.md` (as `erc-9999.md` beside the merged ERCs for link resolution): **0 findings**.
+- `eipw` 0.11.0 under the ERCs config over `ERCS/erc-8447.md` (placed beside the merged ERCs for link resolution): **0 findings**.
 - `python3 scripts/make-filing-package.py --allow-tbd`: package ok (38 files), preamble order and limits, required sections, CC0 line, no smart quotes, no external links outside `rfc-editor.org`, first mentions linked, no proposal reference in backticks, no RFC 2119 keywords in Security Considerations, asset links resolve, no CJK characters in any shipped file.
 - Both example packs validate against `swarm-pack.schema.json` (JSON Schema 2020-12).
 - solc warnings: none in the proposal's contracts. forge-lint: style notes (unaliased plain imports of `SAIErrors.sol`) and one `unsafe-typecast` note on a cast that is range-checked on the line before (`SwarmDecisionAdapter._consumerDeadline`).

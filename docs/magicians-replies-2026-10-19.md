@@ -1,6 +1,6 @@
 # Magicians thread 29998 — replies to posts #2, #3 and #4 (revision 2)
 
-Status: drafts for the author's approval; each is posted as a reply to the post it answers. Revision 2 of the draft (`ERCS/erc-sai.md`, reference v0.3) implements everything the replies commit to and is on the PR branch and in this repository before the replies go out.
+Status: drafts for the author's approval; each is posted as a reply to the post it answers. Revision 2 of the draft (`ERCS/erc-8447.md`, reference v0.3) implements everything the replies commit to and is on the PR branch and in this repository before the replies go out.
 
 Revision 2 in one paragraph, for the PR description: *addresses Magicians #2–#4. The pack's economic terms (`commitment`) carry their own hash, committed at formation and compared at amendment, so a changed objective or commitment is material by construction and the `material` flag is one-way; `challenge` treats a `false` returned with less than one eighth of the pre-call gas as unevaluable and reinstates a suspended member whose module answers `true` again; `expel` re-evaluates the module before acting; `isAuthorized` reports nobody once a swarm is dissolved, and the account profile states its post-dissolution rule on-chain (`recoveryAddress()`). Interface identifiers: `ISwarmRegistry` `0x085203a4`, `ISwarmAccount` `0x25e98353`. 91 tests.*
 
