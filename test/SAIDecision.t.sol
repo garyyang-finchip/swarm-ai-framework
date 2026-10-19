@@ -64,7 +64,9 @@ contract SAIDecisionTest is SAIScenarioBase {
         assertTrue(policies.policyExists(policyId));
         A.Issue memory issue = _issue(issueId);
         assertEq(issue.consumer, address(adapter));
-        assertEq(issue.obligationId, keccak256(abi.encode(id, T.DecisionPoint.ADMIT, admitCall(w1))));
+        assertEq(issue.obligationId, keccak256(abi.encode(id, T.DecisionPoint.ADMIT, admitCall(w1), uint32(0))));
+        // the subject names the decision point, the exact call, the charter version and the phase
+        assertEq(issue.subject.dataHash, keccak256(abi.encode(T.DecisionPoint.ADMIT, admitCall(w1), uint32(1), uint32(0))));
         // the same proposal cannot be filed twice while one is live (ERC-8436 obligation rule)
         vm.expectRevert("ACDF: obligation active");
         adapter.open(id, T.DecisionPoint.ADMIT, admitCall(w1), roster3());
@@ -173,9 +175,81 @@ contract SAIDecisionTest is SAIScenarioBase {
         assertEq(uint8(reg.getMember(id, w1).suspension), uint8(T.SuspensionCause.AUTHORITY));
     }
 
+    /// A decision is taken in one phase and performed in no other: an ADMIT approved in phase 0 is
+    /// refused once the swarm has advanced, and a fresh proposal in the new phase is a new obligation.
+    function test_proposalApprovedInAnEarlierPhaseIsRefused() public {
+        bytes32 three = _threePhaseSwarm();
+        vm.prank(w1); reg.applyToJoin(three, ROLE_WORKER, CHARTER1);
+        bytes32 issueId = adapter.open(three, T.DecisionPoint.ADMIT, abi.encodeCall(ISwarmRegistry.admit, (three, w1, ROLE_WORKER)), roster3());
+        vote(issueId, roster2(c1, c2), true);
+        // the council advances the swarm (INHERIT: the same roster, phase 1) before the admission is performed
+        bytes32 adv = adapter.open(three, T.DecisionPoint.ADVANCE, abi.encodeCall(ISwarmRegistry.advance, (three, new address[](0), new bytes32[](0))), roster3());
+        vote(adv, roster2(c2, c3), true);
+        adapter.execute(adv);
+        assertEq(reg.getSwarm(three).phase, 1);
+        vm.expectRevert("SAIDecision: phase changed");
+        adapter.execute(issueId);
+        assertEq(uint8(status(three, w1)), uint8(T.MemberStatus.CANDIDATE));
+        // the same call in the new phase is a new proposal (the obligation carries the phase) and works
+        bytes32 issue2 = adapter.open(three, T.DecisionPoint.ADMIT, abi.encodeCall(ISwarmRegistry.admit, (three, w1, ROLE_WORKER)), roster3());
+        assertTrue(issue2 != issueId);
+        assertEq(dec.getIssue(issue2).obligationId, keccak256(abi.encode(three, T.DecisionPoint.ADMIT, abi.encodeCall(ISwarmRegistry.admit, (three, w1, ROLE_WORKER)), uint32(1))));
+        vote(issue2, roster2(c1, c3), true);
+        adapter.execute(issue2);
+        assertEq(uint8(status(three, w1)), uint8(T.MemberStatus.ACTIVE));
+    }
+
+    /// Two distinct ADVANCE proposals approved in phase 0 of a three-phase swarm: the first moves
+    /// the swarm to phase 1; the second, whose arguments would also satisfy the 1 -> 2 transition,
+    /// is refused because `advance` is relative and a phase change does not touch the commitment
+    /// version. (Reported in the ERC-8447 thread, second review round.)
+    function test_twoApprovedAdvancesDoNotChainAcrossPhases() public {
+        bytes32 three = _threePhaseSwarm();
+        bytes memory call = abi.encodeCall(ISwarmRegistry.advance, (three, new address[](0), new bytes32[](0)));
+        bytes32 first = adapter.open(three, T.DecisionPoint.ADVANCE, call, roster3());
+        vote(first, roster2(c1, c2), true);
+        // the obligation is finished once the first is Final, so the identical proposal can be filed again in phase 0
+        bytes32 second = adapter.open(three, T.DecisionPoint.ADVANCE, call, roster3());
+        assertTrue(second != first);
+        vote(second, roster2(c1, c3), true);
+        adapter.execute(first);
+        assertEq(reg.getSwarm(three).phase, 1);
+        assertEq(reg.getSwarm(three).commitmentVersion, 1); // unchanged by the advance
+        vm.expectRevert("SAIDecision: phase changed");
+        adapter.execute(second);
+        assertEq(reg.getSwarm(three).phase, 1);
+        // advancing 1 -> 2 needs a decision taken in phase 1
+        bytes32 third = adapter.open(three, T.DecisionPoint.ADVANCE, call, roster3());
+        vote(third, roster2(c2, c3), true);
+        adapter.execute(third);
+        assertEq(reg.getSwarm(three).phase, 2);
+    }
+
+    /// A three-phase swarm (phase 1 and 2 INHERIT) whose ADVANCE and ADMIT the council holds.
+    function _threePhaseSwarm() internal returns (bytes32 three) {
+        T.SwarmSpec memory spec = defaultSpec();
+        spec.roles = new T.RoleSpec[](3);
+        spec.roles[0] = role(ROLE_COORD, 1, 1, address(0), true);
+        spec.roles[1] = role(ROLE_VERIFIER, 3, 3, address(0), true);
+        spec.roles[2] = role(ROLE_WORKER, 0, 0, address(0), false);
+        spec.phases = new T.PhaseSpec[](3);
+        spec.phases[0] = phase(P_SHARED, T_PARTITIONED, C_COLLECTIVE, T.Boundary.OPEN, T.Admission.RECRUIT, 0);
+        spec.phases[1] = phase(P_SHARED, T_PARTITIONED, C_COLLECTIVE, T.Boundary.OPEN, T.Admission.INHERIT, 0);
+        spec.phases[2] = phase(P_SHARED, T_PARTITIONED, C_COLLECTIVE, T.Boundary.OPEN, T.Admission.INHERIT, 0);
+        spec.authorities[uint256(T.DecisionPoint.ADMIT)] = T.Authority({kind: T.AuthorityKind.ADDRESS, target: address(adapter), roleId: bytes32(0)});
+        spec.authorities[uint256(T.DecisionPoint.ADVANCE)] = T.Authority({kind: T.AuthorityKind.ADDRESS, target: address(adapter), roleId: bytes32(0)});
+        spec.minMembers = 4;
+        three = formWith(spec, defaultObjective());
+        vm.prank(coord); reg.join(three, ROLE_COORD, CHARTER1);
+        vm.prank(c1); reg.join(three, ROLE_VERIFIER, CHARTER1);
+        vm.prank(c2); reg.join(three, ROLE_VERIFIER, CHARTER1);
+        vm.prank(c3); reg.join(three, ROLE_VERIFIER, CHARTER1);
+        reg.activate(three);
+    }
+
     // helpers reading the adapter's and the registry's records
     function _proposal(bytes32 issueId) internal view returns (bool exists, bool enacted, bytes32 policyId, bytes32 swarmId, uint32 charterVersion) {
-        (exists, enacted, swarmId, , charterVersion, , ) = adapter.proposalOf(issueId);
+        (exists, enacted, swarmId, , charterVersion, , , ) = adapter.proposalOf(issueId);
         policyId = dec.getIssue(issueId).policyId;
     }
 

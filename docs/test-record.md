@@ -1,4 +1,4 @@
-# Test record — reference v0.3 (2026-10-19)
+# Test record — reference v0.3.2 (2026-10-20)
 
 ## Toolchain
 
@@ -13,7 +13,7 @@
 
 ## Results
 
-`forge test`: **91 passed, 0 failed, 0 skipped** across 10 suites.
+`forge test`: **93 passed, 0 failed, 0 skipped** across 10 suites.
 
 | Suite | Tests | Covers |
 |---|---|---|
@@ -22,7 +22,7 @@
 | `SAIMembership` | 21 | admit-then-accept and apply-then-admit; seat uniqueness; open-phase self-join; gated refusal; caps and unknown roles; eligibility at admission; challenge with true, false and reverting modules; a gas-starved module that catches its own reads (a sweep of gas limits never suspends the honest member; without the remainder rule it does from about 1.0M gas); reinstatement on evidence through `challenge`; `expel` re-evaluating the module (reinstates on true, reverts `SAI_Unevaluable` when unevaluable, exits on false); expulsion after grace and reinstatement on judgment; removal of candidates versus members; `leave` always; `joinBySig` by an EOA and by an ERC-1271 wallet, expired and wrong-charter rejection, replay after exit and after a phase change; substitution in a closed phase |
 | `SAIPhases` | 6 | `INHERIT`, `RECRUIT` and `SELECT` advances with lazy exits and counter resets; role maxima and eligibility on `SELECT`; input window closing admissions and contributions; last phase; role authority following the ledger |
 | `SAICharter` | 10 | minor versus material amendments (exit window, completion hold); a changed commitment or objective hash made material by construction and the one-way `material` flag (with the `CharterAmended` event); nobody authorized of any kind after dissolution; the account's recovery path (set only by a representative before dissolution, `recover` only after, zero means nothing leaves); milestones gating `ACHIEVED`; contribution modes; `setCharterURI` and authority transfer; account binding once; resources with a verifying adapter and detachment |
-| `SAIDecision` | 7 | the decision adapter against the vendored ERC-8436 registries: `open` checks, Yes admits through the real registry, No records refusal, `NoDecision` is the status quo, removal by council, a material amendment invalidating a pending proposal, a failed enactment recorded and retried |
+| `SAIDecision` | 9 | the decision adapter against the vendored ERC-8436 registries: `open` checks, Yes admits through the real registry (subject and obligation carry the phase), No records refusal, `NoDecision` is the status quo, removal by council, a material amendment invalidating a pending proposal, a proposal approved in phase 0 refused after an advance and re-filed in phase 1, two approved `ADVANCE` proposals that do not chain across phases (the second-round regression), a failed enactment recorded and retried |
 | `SAIModules` | 5 | ERC-8004 identity (declare, wallet move, reinstatement), trust-assertion level, identity state (stale, retired), composite all/any, allowlist ownership |
 | `SAICaseA` | 3 | tender-bound cooperative swarm end to end (council admission, swarm account as fulfiller, acceptance pays the account, tender adapter concludes `ACHIEVED`, allocation from the account, recovery address set before dissolution, dissolution, representation refused after dissolution, remainder recovered through the account's own rule); cancellation -> `ABANDONED`; expiry -> `FAILED` |
 | `SAICaseB` | 2 | two-phase tender end to end (open bidding, challenge suspends an ineligible bidder, `SELECT` into closed execution, substitution, milestones, conclusion); the chamber cannot advance an ineligible bidder |
@@ -39,7 +39,7 @@ The fixtures under `test/fixtures/` are unmodified copies of the ERC-8436 refere
 | MembershipLib | 12,047 | 12,529 |
 | ResourceLib | 4,819 | 19,757 |
 | SpecValidator | 2,759 | 21,817 |
-| SwarmDecisionAdapter | 12,165 | 12,411 |
+| SwarmDecisionAdapter | 12,319 | 12,257 |
 | SwarmTenderAdapter | 3,753 | 20,823 |
 | SwarmAccount | 2,672 | 21,904 |
 | eligibility modules | 457 - 1,128 | — |

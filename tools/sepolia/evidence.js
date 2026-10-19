@@ -73,6 +73,8 @@ for (const [name, a] of Object.entries(contracts)) { const d = deployTx[a.toLowe
 md += `
 Compiler: solc ${record.compiler.solc}, optimizer enabled (runs 1), via-IR, EVM version cancun, metadata hash ipfs — the settings of \`foundry.toml\`. \`SwarmRegistry\` is linked against the three deployed logic libraries; the decision adapters take the registry, the ERC-8436 registry, the verifier role, the quorum and the body size (2 of 3 for the council, 2 of 2 for the chamber), a 15-minute voting window and a 2-minute margin.
 
+Revisions since the run: the two decision adapters above are the revision-2.1 code and predate revision 2.2 (2026-10-20), which binds every proposal to the phase it was filed in (the finding of the second review round, \`docs/design-memo.md\` 11.3); the registry, the libraries, the module, the tender adapter and the account are the current code. Neither case enacts a decision across a phase change, so the record is unaffected; the revision-2.2 adapter is exercised by the regression tests in \`test/SAIDecision.t.sol\`.
+
 Live dependencies (not deployed by this run): ERC-8436 \`ACDFRegistry\` ${ad(st.ACDFRegistry)} and \`ACDFPolicyRegistry\` ${ad(record.dependencies.ACDFPolicyRegistry)} (revision 3 of the ERC-8436 reference, byte-identical outside immutables and metadata to the fixtures vendored in \`test/fixtures\`), and the token-bound task tender kernel \`TaskToken\` ${ad(st.TaskToken)} (v3.2.1, the source vendored in \`test/fixtures\`).
 
 ## Accounts

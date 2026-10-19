@@ -2,7 +2,7 @@
 
 > Agents form, bound, run and dissolve purpose-bound swarms — collectives with an explicit membership boundary, an objective with attainment rules and a declared collaboration structure — as one interoperable on-chain record.
 
-**Status:** reference v0.3.1 (2026-10-19), revision 2.1 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Deployed on Sepolia on 2026-10-19 with both end-to-end cases executed against the live ERC-8436 registries and the live task tender kernel (`docs/sepolia-evidence.md`, registry `0x2C1065a0a892619c1c4288abaf319326C303a1bc`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 91 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
+**Status:** reference v0.3.2 (2026-10-20), revision 2.2 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Deployed on Sepolia on 2026-10-19 with both end-to-end cases executed against the live ERC-8436 registries and the live task tender kernel (`docs/sepolia-evidence.md`, registry `0x2C1065a0a892619c1c4288abaf319326C303a1bc`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. Revision 2.2 answers the second round: the decision adapter binds every proposal to the phase it was filed in, so an approval obtained in one phase is performed in no other (`advance` is relative, and a selective advance replaces the deciding roster). The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 93 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
 
 ## What it is
 
@@ -28,7 +28,7 @@ assets/erc-8447/contracts/         SAITypes, SAIErrors, SwarmRegistry + librarie
 assets/erc-8447/schemas/           swarm-spec.schema.json (mirror of the struct), swarm-pack.schema.json (the charter root)
 assets/erc-8447/examples/          two packs: a tender-bound cooperative swarm; a two-phase tender (open bidding, selected execution)
 assets/erc-8447/vectors/           spec-hash, join-digest, charter-hash, term-ids, interface-ids (tools/vectors.js, ethers v6)
-test/                             Foundry suite (91 tests); test/fixtures/ vendors the ERC-8436 registries and the task tender kernel
+test/                             Foundry suite (93 tests); test/fixtures/ vendors the ERC-8436 registries and the task tender kernel
 tools/vectors.js                  regenerates the vectors with an independent ABI coder and canonicalizer
 tools/sepolia/                    run.js (the deployment and evidence run, direct or relayed), evidence.js (the record)
 deployments/                      sepolia.json and sepolia/ (receipts, signed batches, case packs, final state, verification)
@@ -40,12 +40,12 @@ docs/                             design memo (decisions log), Magicians post an
 
 ```bash
 forge build --sizes                             # solc 0.8.24, via-IR, optimizer runs = 1; lib/forge-std v1.17.0 is vendored
-forge test                                      # 91 tests
+forge test                                      # 93 tests
 npm install && node tools/vectors.js            # regenerate assets/erc-8447/vectors (ethers 6.13.4)
 python3 scripts/make-filing-package.py --allow-tbd   # dry run of the filing package and lints
 ```
 
-Runtime sizes under the pinned toolchain: `SwarmRegistry` 16,480 B; `LifecycleLib` 20,903 B; `MembershipLib` 12,047 B; `ResourceLib` 4,819 B; `SpecValidator` 2,759 B; `SwarmDecisionAdapter` 12,165 B; `SwarmTenderAdapter` 3,753 B; `SwarmAccount` 2,672 B. The registry delegates to external libraries, each within the EIP-170 limit; Foundry links them automatically at deployment.
+Runtime sizes under the pinned toolchain: `SwarmRegistry` 16,480 B; `LifecycleLib` 20,903 B; `MembershipLib` 12,047 B; `ResourceLib` 4,819 B; `SpecValidator` 2,759 B; `SwarmDecisionAdapter` 12,319 B; `SwarmTenderAdapter` 3,753 B; `SwarmAccount` 2,672 B. The registry delegates to external libraries, each within the EIP-170 limit; Foundry links them automatically at deployment.
 
 ERC-165 identifiers: `ISwarmRegistry` `0x085203a4`, `IEligibility` `0xd0ede3d8`, `ISwarmAccount` `0x25e98353`, `IResourceAdapter` `0x8e20b298`.
 
@@ -77,7 +77,7 @@ ERC-165 identifiers: `ISwarmRegistry` `0x085203a4`, `IEligibility` `0xd0ede3d8`,
 
 ## Sepolia deployment
 
-Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pinned toolchain; all ten contracts carry an exact Sourcify match. Case A (tender-bound cooperative swarm, paid through its account, recovered after dissolution) and Case B (two-phase tender with a challenge and a substitution) ran end to end against the live ERC-8436 registries and the live task tender kernel: 71 transactions, every one successful. The record is `docs/sepolia-evidence.md`; the machine-readable form is `deployments/sepolia.json`.
+Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pinned toolchain; all ten contracts carry an exact Sourcify match. The two decision adapters on Sepolia predate revision 2.2 (the phase binding of proposals); the registry and the cases are unaffected. Case A (tender-bound cooperative swarm, paid through its account, recovered after dissolution) and Case B (two-phase tender with a challenge and a substitution) ran end to end against the live ERC-8436 registries and the live task tender kernel: 71 transactions, every one successful. The record is `docs/sepolia-evidence.md`; the machine-readable form is `deployments/sepolia.json`.
 
 | Contract | Address |
 |---|---|
