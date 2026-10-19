@@ -2,7 +2,7 @@
 
 > Agents form, bound, run and dissolve purpose-bound swarms — collectives with an explicit membership boundary, an objective with attainment rules and a declared collaboration structure — as one interoperable on-chain record.
 
-**Status:** reference v0.3 (2026-10-19), revision 2 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 91 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
+**Status:** reference v0.3.1 (2026-10-19), revision 2.1 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Deployed on Sepolia on 2026-10-19 with both end-to-end cases executed against the live ERC-8436 registries and the live task tender kernel (`docs/sepolia-evidence.md`, registry `0x2C1065a0a892619c1c4288abaf319326C303a1bc`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 91 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
 
 ## What it is
 
@@ -30,8 +30,10 @@ assets/erc-8447/examples/          two packs: a tender-bound cooperative swarm; 
 assets/erc-8447/vectors/           spec-hash, join-digest, charter-hash, term-ids, interface-ids (tools/vectors.js, ethers v6)
 test/                             Foundry suite (91 tests); test/fixtures/ vendors the ERC-8436 registries and the task tender kernel
 tools/vectors.js                  regenerates the vectors with an independent ABI coder and canonicalizer
+tools/sepolia/                    run.js (the deployment and evidence run, direct or relayed), evidence.js (the record)
+deployments/                      sepolia.json and sepolia/ (receipts, signed batches, case packs, final state, verification)
 scripts/make-filing-package.py    builds and lints the ethereum/ERCs submission package (ERCS/erc-N.md + assets/erc-N/)
-docs/                             design memo (decisions log), Magicians post and reply drafts, test record
+docs/                             design memo (decisions log), Magicians post and reply drafts, test record, Sepolia evidence
 ```
 
 ## Build and test
@@ -73,9 +75,27 @@ ERC-165 identifiers: `ISwarmRegistry` `0x085203a4`, `IEligibility` `0xd0ede3d8`,
 | Token-Bound Executable Skills (draft) | skill assets | the `skill` resource kind; the adapter reads the package digest the skill reports |
 | ERC-8444 ARD Onchain | discovery | a recruiting swarm can be published as a value record (informative) |
 
+## Sepolia deployment
+
+Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pinned toolchain; all ten contracts carry an exact Sourcify match. Case A (tender-bound cooperative swarm, paid through its account, recovered after dissolution) and Case B (two-phase tender with a challenge and a substitution) ran end to end against the live ERC-8436 registries and the live task tender kernel: 71 transactions, every one successful. The record is `docs/sepolia-evidence.md`; the machine-readable form is `deployments/sepolia.json`.
+
+| Contract | Address |
+|---|---|
+| SwarmRegistry | `0x2C1065a0a892619c1c4288abaf319326C303a1bc` |
+| LifecycleLib / MembershipLib / ResourceLib | `0xf0CA34139e77EE6Adae171930d330C77a75f09cd` / `0x8582a086749A32F7BFce5BB8D9835026eF85d121` / `0x77b7d8aaFe0Daa42b6E197392B29307A51c448a5` |
+| SpecValidator | `0xE27c429eb67C829312CAAd6Ac8F5359114BbCa00` |
+| AllowlistEligibility | `0x9Bd40264D0062Fb1E5550A63446b64DE4A123C20` |
+| SwarmDecisionAdapter (council 2 of 3 / chamber 2 of 2) | `0xcaB2c509f79ADEd438b119A453f0560C33E7B21A` / `0x073169857FEFb9120799b1299003074A361f777b` |
+| SwarmTenderAdapter | `0x821574AFB51BFBb0615811E354aa3b02dA09ABC6` |
+| SwarmAccount (Case A) | `0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7` |
+| ERC-8436 ACDFRegistry / ACDFPolicyRegistry (live, not ours) | `0x3bE57E74f2E7c280073b6B16A1Db3F562758dB01` / `0x7eAfCC452EC0A60a358a26B6e73f28413C4abeF0` |
+| TaskToken kernel (live, not ours) | `0xA62059A498E40C4Ae4aF926E2B00C1Ff122bDdb7` |
+
+Swarm ids: Case A `0x170bd77e6ed40d99c9930799c381b997497e6ffe86c2e9f90659dbc2fbf280b0` (task token 19), Case B `0xa82999407bc283e1aba303192ad133a68fb18dcd8a990ed4d15c17be5edd8487`; both `DISSOLVED` with outcome `ACHIEVED`. To reproduce locally: `node tools/sepolia/run.js direct --rpc http://127.0.0.1:8545 --keys keys.json --fixtures` against an anvil node.
+
 ## Next steps
 
-Editor review and merge of PR #2081 (ERC-8447 files on the branch); the Sepolia evidence run of Case A and Case B (`deployments/`); Case C (standing committee with `succeed()`) in a later round.
+Editor review and merge of PR #2081 (ERC-8447 files on the branch); Case C (standing committee with `succeed()`) in a later round.
 
 ## License
 

@@ -62,3 +62,7 @@ The fixtures under `test/fixtures/` are unmodified copies of the ERC-8436 refere
 - `python3 scripts/make-filing-package.py --allow-tbd`: package ok (38 files), preamble order and limits, required sections, CC0 line, no smart quotes, no external links outside `rfc-editor.org`, first mentions linked, no proposal reference in backticks, no RFC 2119 keywords in Security Considerations, asset links resolve, no CJK characters in any shipped file.
 - Both example packs validate against `swarm-pack.schema.json` (JSON Schema 2020-12).
 - solc warnings: none in the proposal's contracts. forge-lint: style notes (unaliased plain imports of `SAIErrors.sol`) and one `unsafe-typecast` note on a cast that is range-checked on the line before (`SwarmDecisionAdapter._consumerDeadline`).
+
+## Sepolia run (2026-10-19)
+
+The same step list run against Sepolia: `docs/sepolia-evidence.md` (71 transactions, all successful; exact Sourcify matches for the ten deployed contracts; final state read back and checked against the packs in `deployments/sepolia/`). The rehearsal of that list against a local anvil (`tools/sepolia/run.js direct --fixtures`) deployed the vendored fixtures first and finished with the same final states; its gas figures are the "vs rehearsal" column of the record.

@@ -1,0 +1,779 @@
+{
+  "chainId": 11155111,
+  "network": "Sepolia",
+  "deployer": "0x91E946F5633306f173D6E5d93aD3a040c4211da1",
+  "compiler": {
+    "solc": "0.8.24+commit.e11b9ed9",
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    }
+  },
+  "source": "assets/erc-8447/contracts (revision 2.1)",
+  "contracts": {
+    "SpecValidator": {
+      "address": "0xE27c429eb67C829312CAAd6Ac8F5359114BbCa00",
+      "tx": "0xe2d402b47bbdbf2b6a8f146fa4eb38d2dae9ef836e9f0a4acd83cce92b1b2814",
+      "block": 11946924,
+      "gasUsed": "4474572"
+    },
+    "LifecycleLib": {
+      "address": "0xf0CA34139e77EE6Adae171930d330C77a75f09cd",
+      "tx": "0xc571766c49a2edd1bc5414819a7f7061e1a14d52187974282b25ddbbf28c9352",
+      "block": 11946925,
+      "gasUsed": "32532860"
+    },
+    "MembershipLib": {
+      "address": "0x8582a086749A32F7BFce5BB8D9835026eF85d121",
+      "tx": "0xe4e172078a46d2e6734aed84900492c35462f4a6ec263b12f4f883047be75a05",
+      "block": 11946944,
+      "gasUsed": "18837224"
+    },
+    "ResourceLib": {
+      "address": "0x77b7d8aaFe0Daa42b6E197392B29307A51c448a5",
+      "tx": "0x1a8fee46ec7fdb16d2eec1325bea4097a83a80d8f8eff2d77167e275d6191618",
+      "block": 11946945,
+      "gasUsed": "7659959"
+    },
+    "SwarmRegistry": {
+      "address": "0x2C1065a0a892619c1c4288abaf319326C303a1bc",
+      "tx": "0x4b680d35c63ee5a2759b60591284a7370aea9233a98354bcd0c712426b39022f",
+      "block": 11946960,
+      "gasUsed": "28883879"
+    },
+    "AllowlistEligibility": {
+      "address": "0x9Bd40264D0062Fb1E5550A63446b64DE4A123C20",
+      "tx": "0xc0d01f8f07af72e31609ec576cdff83a0f9f76de3fb1b8eab72602bce9af4dd2",
+      "block": 11946961,
+      "gasUsed": "1288914"
+    },
+    "SwarmDecisionAdapter (council, 2 of 3)": {
+      "address": "0xcaB2c509f79ADEd438b119A453f0560C33E7B21A",
+      "tx": "0x50b930f57451790e9636ddaafc505c4adf654f231a6cc83c9334879db06730a7",
+      "block": 11946973,
+      "gasUsed": "19029985"
+    },
+    "SwarmDecisionAdapter (chamber, 2 of 2)": {
+      "address": "0x073169857FEFb9120799b1299003074A361f777b",
+      "tx": "0x2c0a2fd86ca2fa4016a545e37f4b3654a151f9e65ceac1f76b2a4611e639f34e",
+      "block": 11946988,
+      "gasUsed": "19029985"
+    },
+    "SwarmTenderAdapter": {
+      "address": "0x821574AFB51BFBb0615811E354aa3b02dA09ABC6",
+      "tx": "0x0692d04671dd85c8680bca6919b77f4f7a4d9d39ba141b0bf856b81b2f9fcf4b",
+      "block": 11946989,
+      "gasUsed": "6012374"
+    },
+    "SwarmAccount (Case A)": {
+      "address": "0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7",
+      "tx": "0x19c16af26331c7a1b688e0facdc520ac8a877652d57cf48ab754b6a050414d34",
+      "block": 11947051,
+      "gasUsed": "4455758"
+    }
+  },
+  "dependencies": {
+    "ACDFRegistry": "0x3bE57E74f2E7c280073b6B16A1Db3F562758dB01",
+    "ACDFPolicyRegistry": "0x7eAfCC452EC0A60a358a26B6e73f28413C4abeF0",
+    "TaskToken": "0xA62059A498E40C4Ae4aF926E2B00C1Ff122bDdb7"
+  },
+  "accounts": {
+    "deployer": "0x91E946F5633306f173D6E5d93aD3a040c4211da1",
+    "coord": "0xEa66e8bD35187F0cb0ee19178050dd9D652A77f9",
+    "c1": "0x5E49afD47D0A474EA64b03C6a1854561946da4f3",
+    "c2": "0xBAE31786dA89E971796188759D435C3DecCEfD3e",
+    "c3": "0x08F43E9C4aa64A5E106B1dF506b13A4ea4440dc7",
+    "w1": "0x53df988Cdb52d8617AE6b1922226905e7FE9990b",
+    "b1": "0x740Fd18Ff3bFcbb142Da829f9B56a9DAF77e2228",
+    "b2": "0x342cbCd7A9955906b34D9F09c0c489578242D85A",
+    "b3": "0x3B093cF33724da65949CE14BF038F20790F95c41"
+  },
+  "caseA": {
+    "swarmId": "0x170bd77e6ed40d99c9930799c381b997497e6ffe86c2e9f90659dbc2fbf280b0",
+    "tokenId": "19",
+    "issue": "0xf4803aea2fdd406e27fc02e762033fa7abacb627cdc4a9911dc7d1e1ad181ce3",
+    "submission": "1",
+    "account": "0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7",
+    "hashes": {
+      "descriptors": [
+        "0x57dfb221f10bef26c482ffc8fb87cfef28e86756c1f29ce50cff8d1120c7011e"
+      ],
+      "objectiveHash": "0xb657cacd8561db650729e1c48d0a112c3b2aa2576eccbdfeb98b106b2461ebe9",
+      "commitmentHash": "0xbcfdf7eb590242beff598151b0fe6c77be4ebc5ca5438e28963a3ffece8de79f",
+      "charterHash": "0x5c8dbbab30c3b8c0a5fcafcca24afcf4745282fc81c66444081f5746a590cf7d",
+      "specHash": "0x1ffb541e276bcc11edbe3316cedeb5bc84888a96946fac3a40b0d2a45448ae88"
+    },
+    "pack": "deployments/sepolia/case-a/swarm-pack.json"
+  },
+  "caseB": {
+    "swarmId": "0xa82999407bc283e1aba303192ad133a68fb18dcd8a990ed4d15c17be5edd8487",
+    "issue": "0x294757ad4936517289d38d908043f216ff21c420af2b3ecdcdbde235e003cd77",
+    "hashes": {
+      "descriptors": [
+        "0x0fc6225bc9d7461a15f970e63b9d38a3199f60f88a9afe5ce519ad3afb0b38e1",
+        "0xbe5994ce2e38dc6a3bd06d37b7010f9a30620a5faf2fc46043a396c0d7092aed"
+      ],
+      "objectiveHash": "0x93e16c528aff5151a28d11695866c6590df6b7d900dfb776f82e3e16f0ebc0e0",
+      "commitmentHash": "0x3ff5ac7d889fa781d8b412e7bb7359aa55f911c44c4c19974164cd718c4fd801",
+      "charterHash": "0xe4ce454d7e3a998c0da7751e2f3cf411407e0a1ec3447380f2e9723fb725538b",
+      "specHash": "0x83c242d83255b8b19e8af01db5f0aea1d62e4475ee54c04c6d7519b64c421bf1"
+    },
+    "pack": "deployments/sepolia/case-b/swarm-pack.json"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "label": "SpecValidator",
+      "from": "deployer",
+      "tx": "0xe2d402b47bbdbf2b6a8f146fa4eb38d2dae9ef836e9f0a4acd83cce92b1b2814",
+      "block": 11946924,
+      "gasUsed": "4474572",
+      "contractAddress": "0xE27c429eb67C829312CAAd6Ac8F5359114BbCa00",
+      "rehearsalGas": "649980"
+    },
+    {
+      "index": 1,
+      "label": "LifecycleLib",
+      "from": "deployer",
+      "tx": "0xc571766c49a2edd1bc5414819a7f7061e1a14d52187974282b25ddbbf28c9352",
+      "block": 11946925,
+      "gasUsed": "32532860",
+      "contractAddress": "0xf0CA34139e77EE6Adae171930d330C77a75f09cd",
+      "rehearsalGas": "4573394"
+    },
+    {
+      "index": 2,
+      "label": "MembershipLib",
+      "from": "deployer",
+      "tx": "0xe4e172078a46d2e6734aed84900492c35462f4a6ec263b12f4f883047be75a05",
+      "block": 11946944,
+      "gasUsed": "18837224",
+      "contractAddress": "0x8582a086749A32F7BFce5BB8D9835026eF85d121",
+      "rehearsalGas": "2657852"
+    },
+    {
+      "index": 3,
+      "label": "ResourceLib",
+      "from": "deployer",
+      "tx": "0x1a8fee46ec7fdb16d2eec1325bea4097a83a80d8f8eff2d77167e275d6191618",
+      "block": 11946945,
+      "gasUsed": "7659959",
+      "contractAddress": "0x77b7d8aaFe0Daa42b6E197392B29307A51c448a5",
+      "rehearsalGas": "1095183"
+    },
+    {
+      "index": 4,
+      "label": "SwarmRegistry",
+      "from": "deployer",
+      "tx": "0x4b680d35c63ee5a2759b60591284a7370aea9233a98354bcd0c712426b39022f",
+      "block": 11946960,
+      "gasUsed": "28883879",
+      "contractAddress": "0x2C1065a0a892619c1c4288abaf319326C303a1bc",
+      "rehearsalGas": "4341261"
+    },
+    {
+      "index": 5,
+      "label": "AllowlistEligibility",
+      "from": "deployer",
+      "tx": "0xc0d01f8f07af72e31609ec576cdff83a0f9f76de3fb1b8eab72602bce9af4dd2",
+      "block": 11946961,
+      "gasUsed": "1288914",
+      "contractAddress": "0x9Bd40264D0062Fb1E5550A63446b64DE4A123C20",
+      "rehearsalGas": "214924"
+    },
+    {
+      "index": 6,
+      "label": "SwarmDecisionAdapter council",
+      "from": "deployer",
+      "tx": "0x50b930f57451790e9636ddaafc505c4adf654f231a6cc83c9334879db06730a7",
+      "block": 11946973,
+      "gasUsed": "19029985",
+      "contractAddress": "0xcaB2c509f79ADEd438b119A453f0560C33E7B21A",
+      "rehearsalGas": "2693249"
+    },
+    {
+      "index": 7,
+      "label": "SwarmDecisionAdapter chamber",
+      "from": "deployer",
+      "tx": "0x2c0a2fd86ca2fa4016a545e37f4b3654a151f9e65ceac1f76b2a4611e639f34e",
+      "block": 11946988,
+      "gasUsed": "19029985",
+      "contractAddress": "0x073169857FEFb9120799b1299003074A361f777b",
+      "rehearsalGas": "2693249"
+    },
+    {
+      "index": 8,
+      "label": "SwarmTenderAdapter",
+      "from": "deployer",
+      "tx": "0x0692d04671dd85c8680bca6919b77f4f7a4d9d39ba141b0bf856b81b2f9fcf4b",
+      "block": 11946989,
+      "gasUsed": "6012374",
+      "contractAddress": "0x821574AFB51BFBb0615811E354aa3b02dA09ABC6",
+      "rehearsalGas": "865588"
+    },
+    {
+      "index": 9,
+      "label": "fund coord",
+      "from": "deployer",
+      "tx": "0xab80d7c17422309ad7bc0f369818b7e86ff6e8a1ecd46888c151f950af802390",
+      "block": 11946990,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 10,
+      "label": "fund c1",
+      "from": "deployer",
+      "tx": "0x8998456a574cb876e9c8ca73066b6249af26b8ff50f09741c9df27aea02cde56",
+      "block": 11946991,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 11,
+      "label": "fund c2",
+      "from": "deployer",
+      "tx": "0xfe298b504f3a05eef68c0c116cfbd448d6c403276c13fc622cdcd3a39bc94d37",
+      "block": 11946992,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 12,
+      "label": "fund c3",
+      "from": "deployer",
+      "tx": "0xb3d054861c0a61b8e62b27810c639abca2fd765a73d723063b7b0bce547c8487",
+      "block": 11946993,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 13,
+      "label": "fund w1",
+      "from": "deployer",
+      "tx": "0xd18a7af977e55e49898102e8a67d07a88437cfed07ce57c28cba4d60f4ea982e",
+      "block": 11946994,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 14,
+      "label": "fund b1",
+      "from": "deployer",
+      "tx": "0xec87a0df94d1d5604b9bd7ad5e7bfca4cbd4214d819348717c89ef7f22331d41",
+      "block": 11947007,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 15,
+      "label": "fund b2",
+      "from": "deployer",
+      "tx": "0xa5cb5e230453d1a2e8d685e4641d140d693ca59cc878318f920803af1ded078d",
+      "block": 11947008,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 16,
+      "label": "fund b3",
+      "from": "deployer",
+      "tx": "0x6f14bb15698deb03658b91364d97545cfb66029566d8fb7835c02fcc993a9777",
+      "block": 11947009,
+      "gasUsed": "204600",
+      "rehearsalGas": "21000"
+    },
+    {
+      "index": 17,
+      "label": "A: mintTask",
+      "from": "deployer",
+      "tx": "0x8ee7daf6ba0c9538aa699afd6e8deaf714fbd157befb52b6ac6943c3e95e7ac9",
+      "block": 11947010,
+      "gasUsed": "3408591",
+      "rehearsalGas": "518982"
+    },
+    {
+      "index": 18,
+      "label": "A: fundTask",
+      "from": "deployer",
+      "tx": "0x74852c42f7f6924c69eafff5f63b63e738f0e7b3be5010152ebca209e79b24b0",
+      "block": 11947020,
+      "gasUsed": "381317",
+      "rehearsalGas": "114330"
+    },
+    {
+      "index": 19,
+      "label": "A: allow w1",
+      "from": "deployer",
+      "tx": "0x8622eac41566dfd2370b9000a61ac974f7e9828eb4c535d37b38bf15d6b305c2",
+      "block": 11947021,
+      "gasUsed": "129633",
+      "rehearsalGas": "47613"
+    },
+    {
+      "index": 20,
+      "label": "A: form",
+      "from": "coord",
+      "tx": "0x9a5c3fc59cf12e87ab744099b23527756b3253fcabca608abe1c656313b81c42",
+      "block": 11947022,
+      "gasUsed": "8383421",
+      "rehearsalGas": "1789176"
+    },
+    {
+      "index": 21,
+      "label": "A: coord joins",
+      "from": "coord",
+      "tx": "0xf5fa075e995cada0802e50b56948d869b3c68a8aa8b5270d9ea9a7073452e1d4",
+      "block": 11947023,
+      "gasUsed": "857743",
+      "rehearsalGas": "232903"
+    },
+    {
+      "index": 22,
+      "label": "A: c1 joins",
+      "from": "c1",
+      "tx": "0x74e16305fdce1bb3b97353e386a7df567c09a1dc087f0647c79f57028a606c36",
+      "block": 11947024,
+      "gasUsed": "759823",
+      "rehearsalGas": "215803"
+    },
+    {
+      "index": 23,
+      "label": "A: c2 joins",
+      "from": "c2",
+      "tx": "0x8abcdb74686ba11789c007b7b04550ec40888afed62a24341cfafb940422f971",
+      "block": 11947025,
+      "gasUsed": "661903",
+      "rehearsalGas": "198703"
+    },
+    {
+      "index": 24,
+      "label": "A: c3 joins",
+      "from": "c3",
+      "tx": "0x4af0d3b17292eec40053d73e56f6cbc36cc59d98fd00506e9c1271f33afac2ba",
+      "block": 11947026,
+      "gasUsed": "661903",
+      "rehearsalGas": "198703"
+    },
+    {
+      "index": 25,
+      "label": "A: w1 applies",
+      "from": "w1",
+      "tx": "0xee6e22f6086407b1edf6ae5f55028e40bfa50009b6ea2251a75ca7c51bf1bd49",
+      "block": 11947027,
+      "gasUsed": "643754",
+      "rehearsalGas": "187754"
+    },
+    {
+      "index": 26,
+      "label": "A: council opens ADMIT",
+      "from": "deployer",
+      "tx": "0x7598e9b39c09f086d9edfad4cc134e539be1d3250139c3737e5de1fecc74765e",
+      "block": 11947028,
+      "gasUsed": "5188829",
+      "rehearsalGas": "1235251"
+    },
+    {
+      "index": 27,
+      "label": "A: c1 votes yes",
+      "from": "c1",
+      "tx": "0xb76518f76bdc5d60c4211109e57960c87a5556340ffce8ed44f30d8ffe528beb",
+      "block": 11947046,
+      "gasUsed": "275838",
+      "rehearsalGas": "105398"
+    },
+    {
+      "index": 28,
+      "label": "A: c3 votes yes",
+      "from": "c3",
+      "tx": "0xe6cce0b36bcb91a3385d93b124ca93b8da1471e244b695f1f1187ade8d0b9004",
+      "block": 11947047,
+      "gasUsed": "178664",
+      "rehearsalGas": "89044"
+    },
+    {
+      "index": 29,
+      "label": "A: settle round",
+      "from": "deployer",
+      "tx": "0x0294d5eb5506e53f52910dca82c443d5328d7b83607010572b0c7867e322d2df",
+      "block": 11947048,
+      "gasUsed": "119296",
+      "rehearsalGas": "103296"
+    },
+    {
+      "index": 30,
+      "label": "A: council executes (admit w1)",
+      "from": "deployer",
+      "tx": "0x728c1fc4f2e5425bce1a3610e28be7ae0970c30f7938f6f21d88833cb186edaf",
+      "block": 11947049,
+      "gasUsed": "665826",
+      "rehearsalGas": "272772"
+    },
+    {
+      "index": 31,
+      "label": "A: activate",
+      "from": "coord",
+      "tx": "0x0221fc68b07a53ce3bcef337e639db8a5eab9b56b0c2012ce92afac156eb5659",
+      "block": 11947050,
+      "gasUsed": "203020",
+      "rehearsalGas": "98900"
+    },
+    {
+      "index": 32,
+      "label": "SwarmAccount accountA",
+      "from": "deployer",
+      "tx": "0x19c16af26331c7a1b688e0facdc520ac8a877652d57cf48ab754b6a050414d34",
+      "block": 11947051,
+      "gasUsed": "4455758",
+      "contractAddress": "0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7",
+      "rehearsalGas": "658874"
+    },
+    {
+      "index": 33,
+      "label": "A: setAccount",
+      "from": "coord",
+      "tx": "0x0268a72370b7ed627a2eacdc655ed40596ac14de3d18c102c3969c5c83a181bc",
+      "block": 11947052,
+      "gasUsed": "56820",
+      "rehearsalGas": "47420"
+    },
+    {
+      "index": 34,
+      "label": "A: w1 records contribution",
+      "from": "w1",
+      "tx": "0xe4716c886cd68a1ca1f919147b9c67bdce6f151da29bcf8a2dd55ee67107c7f7",
+      "block": 11947053,
+      "gasUsed": "79809",
+      "rehearsalGas": "63709"
+    },
+    {
+      "index": 35,
+      "label": "A: account submits fulfillment",
+      "from": "coord",
+      "tx": "0x4dca9508031f16911cc905c59508502b59a9746c18285041ffa7904f0cf76c2a",
+      "block": 11947054,
+      "gasUsed": "631759",
+      "rehearsalGas": "195454"
+    },
+    {
+      "index": 36,
+      "label": "A: judge accepts",
+      "from": "deployer",
+      "tx": "0x3975b5113f54e8f5aa8b582572d6d365a8e4b3da8719aae2c06b5a5e459b8c78",
+      "block": 11947068,
+      "gasUsed": "186473",
+      "rehearsalGas": "91993"
+    },
+    {
+      "index": 37,
+      "label": "A: tender adapter settles",
+      "from": "deployer",
+      "tx": "0xfee8a94470708167699809106275d457423ee70398e8d8a94575f1cecebffbf1",
+      "block": 11947069,
+      "gasUsed": "257164",
+      "rehearsalGas": "142674"
+    },
+    {
+      "index": 38,
+      "label": "A: account pays w1",
+      "from": "coord",
+      "tx": "0x262cecdd585d0c7a8cea6bf31aa8f9a98a63d88698e14048d756b7572d2c997f",
+      "block": 11947070,
+      "gasUsed": "50651",
+      "rehearsalGas": "53551"
+    },
+    {
+      "index": 39,
+      "label": "A: dissolve",
+      "from": "coord",
+      "tx": "0x76fb1ec88c911a92a824e3ddc1e1d9cdd9570a3512a6d26bd85a6347e335322d",
+      "block": 11947071,
+      "gasUsed": "63881",
+      "rehearsalGas": "47781"
+    },
+    {
+      "index": 40,
+      "label": "A: recover remainder",
+      "from": "coord",
+      "tx": "0xc4640bdda13d4a8efc6f00074187759f47f8ba22f8a3c69b654e8bbf1c99a253",
+      "block": 11947072,
+      "gasUsed": "85721",
+      "rehearsalGas": "79748"
+    },
+    {
+      "index": 41,
+      "label": "B: allow b1",
+      "from": "deployer",
+      "tx": "0xc769630b5296a6cbdc7d0140a8b358b904a46ebfe6355b86ccf9613274e41b1f",
+      "block": 11947073,
+      "gasUsed": "129633",
+      "rehearsalGas": "47613"
+    },
+    {
+      "index": 42,
+      "label": "B: allow b2",
+      "from": "deployer",
+      "tx": "0x14703b3ddf1942dc8ce028c0445f57fa2c82d557a169529b99d3174ae4e00a71",
+      "block": 11947074,
+      "gasUsed": "129633",
+      "rehearsalGas": "47613"
+    },
+    {
+      "index": 43,
+      "label": "B: allow b3",
+      "from": "deployer",
+      "tx": "0xdd21392f25191b1148693be26a690eb0c558e229cfb16cfb078e00f98b4df012",
+      "block": 11947075,
+      "gasUsed": "129633",
+      "rehearsalGas": "47613"
+    },
+    {
+      "index": 44,
+      "label": "B: form",
+      "from": "coord",
+      "tx": "0x15df345fae71ee6c78c7258f8d7306307481167c550d03d857782381ac2cd623",
+      "block": 11947076,
+      "gasUsed": "8971425",
+      "rehearsalGas": "1930604"
+    },
+    {
+      "index": 45,
+      "label": "B: coord joins",
+      "from": "coord",
+      "tx": "0xfd3b18461e819c55b5754777cca823f473cb288005d3434fe99092ae9154599d",
+      "block": 11947077,
+      "gasUsed": "857743",
+      "rehearsalGas": "232903"
+    },
+    {
+      "index": 46,
+      "label": "B: c1 joins",
+      "from": "c1",
+      "tx": "0xee6ce74a2a7190b6fe9394d14d5f7967162149f3d292fa34cd4e17a9e1ecc766",
+      "block": 11947078,
+      "gasUsed": "759823",
+      "rehearsalGas": "215803"
+    },
+    {
+      "index": 47,
+      "label": "B: c2 joins",
+      "from": "c2",
+      "tx": "0x6302f1cf03c9d89e11f5af28d1f0bde08031180b8ee841e5490c71d3eca8b804",
+      "block": 11947079,
+      "gasUsed": "661903",
+      "rehearsalGas": "198703"
+    },
+    {
+      "index": 48,
+      "label": "B: activate",
+      "from": "deployer",
+      "tx": "0xb9a19c7fab683533a28b5e1d8e1fd1225f62e3038ab9ef8072a6aba5579753d6",
+      "block": 11947080,
+      "gasUsed": "207310",
+      "rehearsalGas": "103190"
+    },
+    {
+      "index": 49,
+      "label": "B: b1 joins",
+      "from": "b1",
+      "tx": "0x4d8ae1732503342a4ddc4d0f42953d89c95de09de69e68388461fe3768fe9b26",
+      "block": 11947081,
+      "gasUsed": "759817",
+      "rehearsalGas": "215797"
+    },
+    {
+      "index": 50,
+      "label": "B: b2 joins",
+      "from": "b2",
+      "tx": "0x685ca4a04e68630d2613ce3f5433e9e0d8f53b7662120863cb0ad6d7c2ec73c3",
+      "block": 11947092,
+      "gasUsed": "661897",
+      "rehearsalGas": "198697"
+    },
+    {
+      "index": 51,
+      "label": "B: b3 joins",
+      "from": "b3",
+      "tx": "0xb32ef781326c88be25cd3607deda70073493ff23c2891eae48278e14ac43ed40",
+      "block": 11947093,
+      "gasUsed": "661897",
+      "rehearsalGas": "198697"
+    },
+    {
+      "index": 52,
+      "label": "B: b1 sketch",
+      "from": "b1",
+      "tx": "0x17a12c5dd53a7f59b07442729e963ad7908c7c4fd115ac52ec1a27d3b4a3c1bc",
+      "block": 11947094,
+      "gasUsed": "79821",
+      "rehearsalGas": "63721"
+    },
+    {
+      "index": 53,
+      "label": "B: b2 sketch",
+      "from": "b2",
+      "tx": "0x668c41273f10402df5faaf887daf167438d24d01c903aa61d0c5d778ada30379",
+      "block": 11947095,
+      "gasUsed": "79821",
+      "rehearsalGas": "63721"
+    },
+    {
+      "index": 54,
+      "label": "B: b3 sketch",
+      "from": "b3",
+      "tx": "0x874777029f95f5fcf3a2ef0254dd3f0b22cb43ae31e9e51082c2de29ca44ad6b",
+      "block": 11947096,
+      "gasUsed": "79821",
+      "rehearsalGas": "63721"
+    },
+    {
+      "index": 55,
+      "label": "B: chamber opens ADVANCE",
+      "from": "deployer",
+      "tx": "0x4a94b45fdedab52c4b0094fc68528334f66531e81f818528ac2f4fa082b6c31b",
+      "block": 11947097,
+      "gasUsed": "6403408",
+      "rehearsalGas": "1465709"
+    },
+    {
+      "index": 56,
+      "label": "B: c1 votes yes",
+      "from": "c1",
+      "tx": "0x4dbac66ee7fbce8cef381dc6851a9a63d11f8c0428baaba99124d96d82bb4d43",
+      "block": 11947105,
+      "gasUsed": "273404",
+      "rehearsalGas": "102964"
+    },
+    {
+      "index": 57,
+      "label": "B: c2 votes yes",
+      "from": "c2",
+      "tx": "0xf6fe8298e8332b64e3b3f2fc3338120228297494ff4fd849049edceca864eb85",
+      "block": 11947106,
+      "gasUsed": "176025",
+      "rehearsalGas": "86405"
+    },
+    {
+      "index": 58,
+      "label": "B: settle round",
+      "from": "deployer",
+      "tx": "0xecb0bbbfa6efd5c8b503664a653dc9c75a678713d120bf5075e2ad09804597be",
+      "block": 11947107,
+      "gasUsed": "116861",
+      "rehearsalGas": "100861"
+    },
+    {
+      "index": 59,
+      "label": "B: chamber executes (advance)",
+      "from": "deployer",
+      "tx": "0x43a9c81b60df5fd50f51c4fc36102760c605f1905aaa7eaaa0eeffb4fafb7b85",
+      "block": 11947108,
+      "gasUsed": "821781",
+      "rehearsalGas": "378943"
+    },
+    {
+      "index": 60,
+      "label": "B: b2 loses eligibility",
+      "from": "deployer",
+      "tx": "0x8760fc005482506bced15f18f964b9952d101e03b195ce914fec955325cf8d02",
+      "block": 11947109,
+      "gasUsed": "25361",
+      "rehearsalGas": "25701"
+    },
+    {
+      "index": 61,
+      "label": "B: anyone challenges b2",
+      "from": "deployer",
+      "tx": "0x93d13d40cbbe5f5b3cfdfce6c3ec2e42842ed8118916e070c39058146bff12b7",
+      "block": 11947110,
+      "gasUsed": "98390",
+      "rehearsalGas": "74790"
+    },
+    {
+      "index": 62,
+      "label": "B: b2 records while suspended",
+      "from": "b2",
+      "tx": "0x9a3d40134804c1e03c60aa917b26b346d459951e2f1261bae5b0dfa45457203d",
+      "block": 11947111,
+      "gasUsed": "79182",
+      "rehearsalGas": "63082"
+    },
+    {
+      "index": 63,
+      "label": "B: coord substitutes b3 for b2",
+      "from": "coord",
+      "tx": "0x97ce6fe6b650cf4e8f927b5b321f9b230df1fcdea0e0bb730ed3213c6c522a07",
+      "block": 11947112,
+      "gasUsed": "266987",
+      "rehearsalGas": "125899"
+    },
+    {
+      "index": 64,
+      "label": "B: b3 accepts the charter",
+      "from": "b3",
+      "tx": "0xd230ee6a11ff9514a4198e520217f67a0bacdc972460f001c6046f1b246ea21e",
+      "block": 11947113,
+      "gasUsed": "349777",
+      "rehearsalGas": "135737"
+    },
+    {
+      "index": 65,
+      "label": "B: b1 proof",
+      "from": "b1",
+      "tx": "0x75a6adb5c1a7f3fa869dda38a51d9f86636753225e5ab363041398bffaadb7e4",
+      "block": 11947114,
+      "gasUsed": "79809",
+      "rehearsalGas": "63709"
+    },
+    {
+      "index": 66,
+      "label": "B: b3 proof",
+      "from": "b3",
+      "tx": "0x0ad89a3cbfb42f92fb1f5ef10827c50d6f681b2b969fe42e50e434fda3d1318e",
+      "block": 11947115,
+      "gasUsed": "79809",
+      "rehearsalGas": "63709"
+    },
+    {
+      "index": 67,
+      "label": "B: milestone 0 accepted",
+      "from": "deployer",
+      "tx": "0x075d77229835d3ca4e27980d18b782348ec74daeb05aefb489c1f352ee378af5",
+      "block": 11947116,
+      "gasUsed": "398048",
+      "rehearsalGas": "117988"
+    },
+    {
+      "index": 68,
+      "label": "B: milestone 1 accepted",
+      "from": "deployer",
+      "tx": "0xa81b1988f8deda5c3f0643496202d6e495c858f98484e37dabcec8393a0c7036",
+      "block": 11947117,
+      "gasUsed": "398060",
+      "rehearsalGas": "118000"
+    },
+    {
+      "index": 69,
+      "label": "B: conclude ACHIEVED",
+      "from": "deployer",
+      "tx": "0x0a9dd166e5b7779ee8e2ebf1107601108983ff81417b03e217dafc8391222553",
+      "block": 11947118,
+      "gasUsed": "178656",
+      "rehearsalGas": "74636"
+    },
+    {
+      "index": 70,
+      "label": "B: dissolve",
+      "from": "coord",
+      "tx": "0x54d6880288e0f49d490f758bbf332f0907a72f24a69006feb5e6beef849572cc",
+      "block": 11947119,
+      "gasUsed": "63881",
+      "rehearsalGas": "47781"
+    }
+  ]
+}

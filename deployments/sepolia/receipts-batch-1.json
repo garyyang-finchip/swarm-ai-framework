@@ -1,0 +1,138 @@
+[
+ {
+  "label": "SpecValidator",
+  "transactionHash": "0xe2d402b47bbdbf2b6a8f146fa4eb38d2dae9ef836e9f0a4acd83cce92b1b2814",
+  "status": "0x1",
+  "contractAddress": "0xe27c429eb67c829312caad6ac8f5359114bbca00",
+  "gasUsed": "0x4446cc",
+  "blockNumber": "0xb64bac",
+  "logs": []
+ },
+ {
+  "label": "LifecycleLib",
+  "transactionHash": "0xc571766c49a2edd1bc5414819a7f7061e1a14d52187974282b25ddbbf28c9352",
+  "status": "0x1",
+  "contractAddress": "0xf0ca34139e77ee6adae171930d330c77a75f09cd",
+  "gasUsed": "0x1f0697c",
+  "blockNumber": "0xb64bad",
+  "logs": []
+ },
+ {
+  "label": "MembershipLib",
+  "transactionHash": "0xe4e172078a46d2e6734aed84900492c35462f4a6ec263b12f4f883047be75a05",
+  "status": "0x1",
+  "contractAddress": "0x8582a086749a32f7bfce5bb8d9835026ef85d121",
+  "gasUsed": "0x11f6ee8",
+  "blockNumber": "0xb64bc0",
+  "logs": []
+ },
+ {
+  "label": "ResourceLib",
+  "transactionHash": "0x1a8fee46ec7fdb16d2eec1325bea4097a83a80d8f8eff2d77167e275d6191618",
+  "status": "0x1",
+  "contractAddress": "0x77b7d8aafe0daa42b6e197392b29307a51c448a5",
+  "gasUsed": "0x74e1b7",
+  "blockNumber": "0xb64bc1",
+  "logs": []
+ },
+ {
+  "label": "SwarmRegistry",
+  "transactionHash": "0x4b680d35c63ee5a2759b60591284a7370aea9233a98354bcd0c712426b39022f",
+  "status": "0x1",
+  "contractAddress": "0x2c1065a0a892619c1c4288abaf319326c303a1bc",
+  "gasUsed": "0x1b8bba7",
+  "blockNumber": "0xb64bd0",
+  "logs": []
+ },
+ {
+  "label": "AllowlistEligibility",
+  "transactionHash": "0xc0d01f8f07af72e31609ec576cdff83a0f9f76de3fb1b8eab72602bce9af4dd2",
+  "status": "0x1",
+  "contractAddress": "0x9bd40264d0062fb1e5550a63446b64de4a123c20",
+  "gasUsed": "0x13aad2",
+  "blockNumber": "0xb64bd1",
+  "logs": [
+   {
+    "address": "0x9bd40264d0062fb1e5550a63446b64de4a123c20",
+    "topics": [
+     "0xb532073b38c83145e3e5135377a08bf9aab55bc0fd7c1179cd4fb995d2a5159c",
+     "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "0x00000000000000000000000091e946f5633306f173d6e5d93ad3a040c4211da1"
+    ],
+    "data": "0x"
+   }
+  ]
+ },
+ {
+  "label": "SwarmDecisionAdapter council",
+  "transactionHash": "0x50b930f57451790e9636ddaafc505c4adf654f231a6cc83c9334879db06730a7",
+  "status": "0x1",
+  "contractAddress": "0xcab2c509f79aded438b119a453f0560c33e7b21a",
+  "gasUsed": "0x1225fe1",
+  "blockNumber": "0xb64bdd",
+  "logs": []
+ },
+ {
+  "label": "SwarmDecisionAdapter chamber",
+  "transactionHash": "0x2c0a2fd86ca2fa4016a545e37f4b3654a151f9e65ceac1f76b2a4611e639f34e",
+  "status": "0x1",
+  "contractAddress": "0x073169857fefb9120799b1299003074a361f777b",
+  "gasUsed": "0x1225fe1",
+  "blockNumber": "0xb64bec",
+  "logs": []
+ },
+ {
+  "label": "SwarmTenderAdapter",
+  "transactionHash": "0x0692d04671dd85c8680bca6919b77f4f7a4d9d39ba141b0bf856b81b2f9fcf4b",
+  "status": "0x1",
+  "contractAddress": "0x821574afb51bfbb0615811e354aa3b02da09abc6",
+  "gasUsed": "0x5bbdd6",
+  "blockNumber": "0xb64bed",
+  "logs": []
+ },
+ {
+  "label": "fund coord",
+  "transactionHash": "0xab80d7c17422309ad7bc0f369818b7e86ff6e8a1ecd46888c151f950af802390",
+  "status": "0x1",
+  "contractAddress": null,
+  "gasUsed": "0x31f38",
+  "blockNumber": "0xb64bee",
+  "logs": []
+ },
+ {
+  "label": "fund c1",
+  "transactionHash": "0x8998456a574cb876e9c8ca73066b6249af26b8ff50f09741c9df27aea02cde56",
+  "status": "0x1",
+  "contractAddress": null,
+  "gasUsed": "0x31f38",
+  "blockNumber": "0xb64bef",
+  "logs": []
+ },
+ {
+  "label": "fund c2",
+  "transactionHash": "0xfe298b504f3a05eef68c0c116cfbd448d6c403276c13fc622cdcd3a39bc94d37",
+  "status": "0x1",
+  "contractAddress": null,
+  "gasUsed": "0x31f38",
+  "blockNumber": "0xb64bf0",
+  "logs": []
+ },
+ {
+  "label": "fund c3",
+  "transactionHash": "0xb3d054861c0a61b8e62b27810c639abca2fd765a73d723063b7b0bce547c8487",
+  "status": "0x1",
+  "contractAddress": null,
+  "gasUsed": "0x31f38",
+  "blockNumber": "0xb64bf1",
+  "logs": []
+ },
+ {
+  "label": "fund w1",
+  "transactionHash": "0xd18a7af977e55e49898102e8a67d07a88437cfed07ce57c28cba4d60f4ea982e",
+  "status": "0x1",
+  "contractAddress": null,
+  "gasUsed": "0x31f38",
+  "blockNumber": "0xb64bf2",
+  "logs": []
+ }
+]

@@ -1,0 +1,157 @@
+{
+  "commit": "a78b92780818e3edbd630b95eee8ba73a3ee921c",
+  "compiler": "0.8.24+commit.e11b9ed9",
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "remappings": [
+      ":forge-std/=lib/forge-std/src/"
+    ]
+  },
+  "contracts": [
+    {
+      "name": "SpecValidator",
+      "address": "0xE27c429eb67C829312CAAd6Ac8F5359114BbCa00",
+      "creationTx": "0xe2d402b47bbdbf2b6a8f146fa4eb38d2dae9ef836e9f0a4acd83cce92b1b2814",
+      "identifier": "assets/erc-8447/contracts/libraries/SpecValidator.sol:SpecValidator",
+      "sources": [
+        "assets/erc-8447/contracts/SAIErrors.sol",
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/libraries/SpecValidator.sol"
+      ]
+    },
+    {
+      "name": "LifecycleLib",
+      "address": "0xf0CA34139e77EE6Adae171930d330C77a75f09cd",
+      "creationTx": "0xc571766c49a2edd1bc5414819a7f7061e1a14d52187974282b25ddbbf28c9352",
+      "identifier": "assets/erc-8447/contracts/libraries/LifecycleLib.sol:LifecycleLib",
+      "sources": [
+        "assets/erc-8447/contracts/SAIErrors.sol",
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/interfaces/IEligibility.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmAccount.sol",
+        "assets/erc-8447/contracts/libraries/LifecycleLib.sol",
+        "assets/erc-8447/contracts/libraries/SAIStore.sol",
+        "assets/erc-8447/contracts/libraries/SpecValidator.sol"
+      ]
+    },
+    {
+      "name": "MembershipLib",
+      "address": "0x8582a086749A32F7BFce5BB8D9835026eF85d121",
+      "creationTx": "0xe4e172078a46d2e6734aed84900492c35462f4a6ec263b12f4f883047be75a05",
+      "identifier": "assets/erc-8447/contracts/libraries/MembershipLib.sol:MembershipLib",
+      "sources": [
+        "assets/erc-8447/contracts/SAIErrors.sol",
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/interfaces/IEligibility.sol",
+        "assets/erc-8447/contracts/libraries/MembershipLib.sol",
+        "assets/erc-8447/contracts/libraries/SAIStore.sol",
+        "assets/erc-8447/contracts/libraries/SignatureChecker.sol"
+      ]
+    },
+    {
+      "name": "ResourceLib",
+      "address": "0x77b7d8aaFe0Daa42b6E197392B29307A51c448a5",
+      "creationTx": "0x1a8fee46ec7fdb16d2eec1325bea4097a83a80d8f8eff2d77167e275d6191618",
+      "identifier": "assets/erc-8447/contracts/libraries/ResourceLib.sol:ResourceLib",
+      "sources": [
+        "assets/erc-8447/contracts/SAIErrors.sol",
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/interfaces/IEligibility.sol",
+        "assets/erc-8447/contracts/interfaces/IResourceAdapter.sol",
+        "assets/erc-8447/contracts/libraries/ResourceLib.sol",
+        "assets/erc-8447/contracts/libraries/SAIStore.sol"
+      ]
+    },
+    {
+      "name": "SwarmRegistry",
+      "address": "0x2C1065a0a892619c1c4288abaf319326C303a1bc",
+      "creationTx": "0x4b680d35c63ee5a2759b60591284a7370aea9233a98354bcd0c712426b39022f",
+      "identifier": "assets/erc-8447/contracts/SwarmRegistry.sol:SwarmRegistry",
+      "sources": [
+        "assets/erc-8447/contracts/SAIErrors.sol",
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/SwarmRegistry.sol",
+        "assets/erc-8447/contracts/interfaces/IEligibility.sol",
+        "assets/erc-8447/contracts/interfaces/IResourceAdapter.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmAccount.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol",
+        "assets/erc-8447/contracts/libraries/LifecycleLib.sol",
+        "assets/erc-8447/contracts/libraries/MembershipLib.sol",
+        "assets/erc-8447/contracts/libraries/ResourceLib.sol",
+        "assets/erc-8447/contracts/libraries/SAIStore.sol",
+        "assets/erc-8447/contracts/libraries/SignatureChecker.sol",
+        "assets/erc-8447/contracts/libraries/SpecValidator.sol"
+      ]
+    },
+    {
+      "name": "AllowlistEligibility",
+      "address": "0x9Bd40264D0062Fb1E5550A63446b64DE4A123C20",
+      "creationTx": "0xc0d01f8f07af72e31609ec576cdff83a0f9f76de3fb1b8eab72602bce9af4dd2",
+      "identifier": "assets/erc-8447/contracts/modules/AllowlistEligibility.sol:AllowlistEligibility",
+      "sources": [
+        "assets/erc-8447/contracts/interfaces/IEligibility.sol",
+        "assets/erc-8447/contracts/modules/AllowlistEligibility.sol"
+      ]
+    },
+    {
+      "name": "SwarmDecisionAdapter",
+      "address": "0xcaB2c509f79ADEd438b119A453f0560C33E7B21A",
+      "creationTx": "0x50b930f57451790e9636ddaafc505c4adf654f231a6cc83c9334879db06730a7",
+      "identifier": "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol:SwarmDecisionAdapter",
+      "sources": [
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/ACDFTypes.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFPolicyRegistry.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFRegistry.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
+      ]
+    },
+    {
+      "name": "SwarmDecisionAdapter",
+      "address": "0x073169857FEFb9120799b1299003074A361f777b",
+      "creationTx": "0x2c0a2fd86ca2fa4016a545e37f4b3654a151f9e65ceac1f76b2a4611e639f34e",
+      "identifier": "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol:SwarmDecisionAdapter",
+      "sources": [
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/ACDFTypes.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFPolicyRegistry.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFRegistry.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
+      ]
+    },
+    {
+      "name": "SwarmTenderAdapter",
+      "address": "0x821574AFB51BFBb0615811E354aa3b02dA09ABC6",
+      "creationTx": "0x0692d04671dd85c8680bca6919b77f4f7a4d9d39ba141b0bf856b81b2f9fcf4b",
+      "identifier": "assets/erc-8447/contracts/adapters/SwarmTenderAdapter.sol:SwarmTenderAdapter",
+      "sources": [
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/adapters/SwarmTenderAdapter.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/ITaskTenderKernel.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
+      ]
+    },
+    {
+      "name": "SwarmAccount",
+      "address": "0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7",
+      "creationTx": "0x19c16af26331c7a1b688e0facdc520ac8a877652d57cf48ab754b6a050414d34",
+      "identifier": "assets/erc-8447/contracts/account/SwarmAccount.sol:SwarmAccount",
+      "sources": [
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/account/SwarmAccount.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmAccount.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
+      ]
+    }
+  ]
+}
