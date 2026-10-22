@@ -77,7 +77,7 @@ ERC-165 identifiers: `ISwarmRegistry` `0x085203a4`, `IEligibility` `0xd0ede3d8`,
 
 ## Sepolia deployment
 
-Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pinned toolchain; all ten contracts carry an exact Sourcify match. The two decision adapters on Sepolia predate revision 2.2 (the phase binding of proposals); the registry and the cases are unaffected. Case A (tender-bound cooperative swarm, paid through its account, recovered after dissolution) and Case B (two-phase tender with a challenge and a substitution) ran end to end against the live ERC-8436 registries and the live task tender kernel: 71 transactions, every one successful. The record is `docs/sepolia-evidence.md`; the machine-readable form is `deployments/sepolia.json`.
+Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pinned toolchain; all contracts carry an exact Sourcify match. The council and chamber adapters of Cases A and B predate revision 2.2 (the phase binding of proposals; neither case is affected); on 2026-10-22 the revision-2.2 adapter was deployed next to the same registry and the second review round's regression was run on-chain as Case R: two `ADVANCE` approvals obtained in stage 0 of a three-stage swarm, the first performed, the second refused in stage 1 with `SAIDecision: phase changed`, a stage-0 `ADMIT` refused the same way, both re-decided in stage 1 and performed. Case A (tender-bound cooperative swarm, paid through its account, recovered after dissolution) and Case B (two-phase tender with a challenge and a substitution) ran end to end against the live ERC-8436 registries and the live task tender kernel: 71 transactions, every one successful; Case R added 35 more, two of them refusals the step list required. The record is `docs/sepolia-evidence.md`; the machine-readable form is `deployments/sepolia.json`.
 
 | Contract | Address |
 |---|---|
@@ -88,10 +88,11 @@ Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pin
 | SwarmDecisionAdapter (council 2 of 3 / chamber 2 of 2) | `0xcaB2c509f79ADEd438b119A453f0560C33E7B21A` / `0x073169857FEFb9120799b1299003074A361f777b` |
 | SwarmTenderAdapter | `0x821574AFB51BFBb0615811E354aa3b02dA09ABC6` |
 | SwarmAccount (Case A) | `0x7EFDbc0821deb32139A459eB2E6C3E7D31B7FBB7` |
+| SwarmDecisionAdapter (revision 2.2, council 2 of 3; Case R) | `0x82E2048b603FF5D7b9f586b1f6588a026a90974D` |
 | ERC-8436 ACDFRegistry / ACDFPolicyRegistry (live, not ours) | `0x3bE57E74f2E7c280073b6B16A1Db3F562758dB01` / `0x7eAfCC452EC0A60a358a26B6e73f28413C4abeF0` |
 | TaskToken kernel (live, not ours) | `0xA62059A498E40C4Ae4aF926E2B00C1Ff122bDdb7` |
 
-Swarm ids: Case A `0x170bd77e6ed40d99c9930799c381b997497e6ffe86c2e9f90659dbc2fbf280b0` (task token 19), Case B `0xa82999407bc283e1aba303192ad133a68fb18dcd8a990ed4d15c17be5edd8487`; both `DISSOLVED` with outcome `ACHIEVED`. To reproduce locally: `node tools/sepolia/run.js direct --rpc http://127.0.0.1:8545 --keys keys.json --fixtures` against an anvil node.
+Swarm ids: Case A `0x170bd77e6ed40d99c9930799c381b997497e6ffe86c2e9f90659dbc2fbf280b0` (task token 19), Case B `0xa82999407bc283e1aba303192ad133a68fb18dcd8a990ed4d15c17be5edd8487`, Case R `0x9d983aaaf48a30a107614ea585b9a65026d620070f1ff9115937bada125aac00`; all three `DISSOLVED` with outcome `ACHIEVED`. To reproduce locally: `node tools/sepolia/run.js direct --rpc http://127.0.0.1:8545 --keys keys.json --fixtures --case-r` against an anvil node.
 
 ## Next steps
 

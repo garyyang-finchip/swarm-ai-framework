@@ -152,6 +152,22 @@
         "assets/erc-8447/contracts/interfaces/ISwarmAccount.sol",
         "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
       ]
+    },
+    {
+      "name": "SwarmDecisionAdapter",
+      "address": "0x82E2048b603FF5D7b9f586b1f6588a026a90974D",
+      "creationTx": "0xbf6b5375b8a535e7fc6db78b53095c2e71244715f480e45eb8bb65c69a4570bd",
+      "identifier": "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol:SwarmDecisionAdapter",
+      "sources": [
+        "assets/erc-8447/contracts/SAITypes.sol",
+        "assets/erc-8447/contracts/adapters/SwarmDecisionAdapter.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/ACDFTypes.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFPolicyRegistry.sol",
+        "assets/erc-8447/contracts/adapters/interfaces/IACDFRegistry.sol",
+        "assets/erc-8447/contracts/interfaces/ISwarmRegistry.sol"
+      ],
+      "commit": "cb4ed91",
+      "note": "revision 2.2 (Case R, 2026-10-22)"
     }
   ]
 }

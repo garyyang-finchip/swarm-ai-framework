@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "specHash": "0x70ea58cf0ab7b882cb5fb6ee36880e13910930ba5a3878ab2526e4ee05eb1e72",
+  "origin": {
+    "kind": "sai.origin.initiator",
+    "ref": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "description": "Formed by the coordinator for the revision-2.2 decision regression on Sepolia"
+  },
+  "charter": {
+    "path": "charter.md",
+    "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "objective": {
+    "kind": "TERMINAL",
+    "goal": "Exercise the phase binding of collective decisions on the live chain: two ADVANCE proposals approved in stage 0 must not chain the swarm into stage 2, and an ADMIT approved in stage 0 must be refused after the advance and re-decided in stage 1.",
+    "successCriteria": [
+      "The second stage-0 ADVANCE approval is refused in stage 1 (SAIDecision: phase changed)",
+      "The stage-0 ADMIT approval is refused in stage 1 and a stage-1 decision admits the candidate",
+      "A stage-1 ADVANCE decision reaches stage 2"
+    ],
+    "acceptance": {
+      "kind": "judge",
+      "authority": "0x91E946F5633306f173D6E5d93aD3a040c4211da1",
+      "description": "The deployer, as judge, records the outcome; the coordinator concludes"
+    }
+  },
+  "commitment": {
+    "allocation": [
+      {
+        "phase": "stage-0",
+        "rule": "equal",
+        "description": "No payment on this run"
+      },
+      {
+        "phase": "stage-1",
+        "rule": "equal",
+        "description": "No payment on this run"
+      },
+      {
+        "phase": "stage-2",
+        "rule": "equal",
+        "description": "No payment on this run"
+      }
+    ],
+    "costs": [
+      "None"
+    ],
+    "liabilities": [
+      "None"
+    ],
+    "dataAccess": [
+      "None"
+    ],
+    "externalActions": [
+      "None"
+    ]
+  },
+  "mode": {
+    "namedProfile": "staged",
+    "phases": [
+      {
+        "name": "stage-0",
+        "payoff": "sai.payoff.shared",
+        "topology": "sai.topology.partitioned",
+        "coordination": "sai.coordination.collective",
+        "boundary": "OPEN",
+        "admission": "RECRUIT",
+        "inputWindow": 0,
+        "description": "Recruitment and first work stage. The verifier council (2-of-3 through the collective decision adapter) holds ADMIT and ADVANCE; the worker candidate applies here."
+      },
+      {
+        "name": "stage-1",
+        "payoff": "sai.payoff.shared",
+        "topology": "sai.topology.partitioned",
+        "coordination": "sai.coordination.collective",
+        "boundary": "OPEN",
+        "admission": "INHERIT",
+        "inputWindow": 0,
+        "description": "Second stage; every member carries over. Decisions approved in stage 0 and not performed before the advance are void: the adapter binds each proposal to its filing phase (revision 2.2)."
+      },
+      {
+        "name": "stage-2",
+        "payoff": "sai.payoff.shared",
+        "topology": "sai.topology.partitioned",
+        "coordination": "sai.coordination.collective",
+        "boundary": "OPEN",
+        "admission": "INHERIT",
+        "inputWindow": 0,
+        "description": "Third stage; reached only by a decision taken in stage 1."
+      }
+    ]
+  },
+  "roles": [
+    {
+      "roleId": "0x4fc13b418c06e66bee8d79228bef6e44cc720286e48578225bdc8c8c0b62c27d",
+      "name": "sai.role.coordinator",
+      "description": "Standing coordinator; self-join",
+      "eligibility": {
+        "requires": []
+      }
+    },
+    {
+      "roleId": "0x5e56c6e5653691ad60be29b0daa2b1da03e2626066088adb40cb89caf733d8d0",
+      "name": "sai.role.verifier",
+      "description": "Council of three; self-join; decides ADMIT and ADVANCE 2-of-3",
+      "eligibility": {
+        "requires": []
+      }
+    },
+    {
+      "roleId": "0x0e3a19745aa9b7079f93a3673c0bba2e976f355a1a9469cbe536fcb9df620fc1",
+      "name": "sai.role.worker",
+      "description": "Applies in stage 0; admitted by a council decision",
+      "eligibility": {
+        "requires": []
+      }
+    }
+  ],
+  "resources": [],
+  "decisionPoints": {
+    "ADMIT": {
+      "description": "Collective: verifier council 2-of-3 through the revision-2.2 collective decision adapter; each decision snapshots the council roster and binds the filing phase",
+      "adapter": "0x82E2048b603FF5D7b9f586b1f6588a026a90974D"
+    },
+    "ADVANCE": {
+      "description": "Collective: the same council and adapter",
+      "adapter": "0x82E2048b603FF5D7b9f586b1f6588a026a90974D"
+    },
+    "CONCLUDE": {
+      "description": "ADDRESS: the coordinator, or the judge as acceptance authority"
+    },
+    "REPRESENT": {
+      "description": "ROLE sai.role.coordinator"
+    }
+  },
+  "prev": null
+}

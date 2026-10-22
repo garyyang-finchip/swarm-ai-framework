@@ -31,6 +31,8 @@ const contracts = {
   "SwarmDecisionAdapter (council, 2 of 3)": st.council, "SwarmDecisionAdapter (chamber, 2 of 2)": st.chamber,
   SwarmTenderAdapter: st.SwarmTenderAdapter, "SwarmAccount (Case A)": st.accountA,
 };
+if (st.adapter22) contracts["SwarmDecisionAdapter (revision 2.2, council 2 of 3)"] = st.adapter22;
+const caseR = !!st.swarmR;
 const deployTx = {};
 for (const s of st.steps) if (s.contractAddress) deployTx[s.contractAddress.toLowerCase()] = s;
 
@@ -39,15 +41,17 @@ const record = {
   network: "Sepolia",
   deployer: members.deployer,
   compiler: { solc: "0.8.24+commit.e11b9ed9", optimizer: { enabled: true, runs: 1 }, viaIR: true, evmVersion: "cancun", metadata: { bytecodeHash: "ipfs" } },
-  source: "assets/erc-8447/contracts (revision 2.1)",
+  source: st.adapter22 ? "assets/erc-8447/contracts (revision 2.1; the revision-2.2 adapter and Case R added 2026-10-22)" : "assets/erc-8447/contracts (revision 2.1)",
   contracts: Object.fromEntries(Object.entries(contracts).map(([k, a]) => { const d = deployTx[a.toLowerCase()] || {}; return [k, { address: a, tx: d.hash, block: d.block, gasUsed: d.gasUsed }]; })),
   dependencies: { ACDFRegistry: st.ACDFRegistry, ACDFPolicyRegistry: "0x7eAfCC452EC0A60a358a26B6e73f28413C4abeF0", TaskToken: st.TaskToken },
   accounts: members,
   caseA: { swarmId: st.swarmA, tokenId: st.tokenA, issue: st.issueA, submission: st.submissionA, account: st.accountA, hashes: st.hashesA,
     pack: "deployments/sepolia/case-a/swarm-pack.json" },
   caseB: { swarmId: st.swarmB, issue: st.issueB, hashes: st.hashesB, pack: "deployments/sepolia/case-b/swarm-pack.json" },
+  caseR: caseR ? { adapter: st.adapter22, swarmId: st.swarmR, issues: { admitStage0: st.issueR_admit0, advance1: st.issueR_adv1, advance2: st.issueR_adv2, admitStage1: st.issueR_admit1, advance3: st.issueR_adv3 },
+    hashes: st.hashesR, pack: "deployments/sepolia/case-r/swarm-pack.json" } : undefined,
   steps: st.steps.map((s, i) => ({ index: i, label: s.label, from: s.from, tx: s.hash, block: s.block, gasUsed: s.gasUsed, contractAddress: s.contractAddress,
-    rehearsalGas: gasref[s.label] ? gasref[s.label].toString() : undefined })),
+    reverted: s.reverted || undefined, revertReason: s.reason || undefined, rehearsalGas: gasref[s.label] ? gasref[s.label].toString() : undefined })),
 };
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(path.join(path.dirname(OUT), "sepolia.json"), JSON.stringify(record, null, 2) + "\n");
@@ -58,9 +62,10 @@ const totalGas = st.steps.reduce((a, s) => a + BigInt(s.gasUsed), 0n);
 const firstBlock = Math.min(...st.steps.map((s) => s.block)), lastBlock = Math.max(...st.steps.map((s) => s.block));
 const ratio = (s) => gasref[s.label] ? (Number(BigInt(s.gasUsed) * 100n / gasref[s.label]) / 100).toFixed(2) + "×" : "";
 
-let md = `# Sepolia evidence run — ERC-8447 reference implementation (revision 2.1)
+const reverted = st.steps.filter((s) => s.reverted).length;
+let md = `# Sepolia evidence run — ERC-8447 reference implementation (revision 2.1${caseR ? ", with the revision-2.2 decision regression" : ""})
 
-Chain: Sepolia (chain id 11155111). Deployer: ${ad(members.deployer)}. Blocks ${firstBlock}–${lastBlock}, ${st.steps.length} transactions, ${n(totalGas)} gas in total. Every transaction below succeeded (status 1) on the first attempt; nothing was retried, replaced or skipped.
+Chain: Sepolia (chain id 11155111). Deployer: ${ad(members.deployer)}. Blocks ${firstBlock}–${lastBlock}, ${st.steps.length} transactions, ${n(totalGas)} gas in total. Every transaction below did what the step list expected on the first attempt: ${st.steps.length - reverted} succeeded (status 1)${reverted ? ` and ${reverted} were refused by the contract as the step required (status 0, marked "refused" below, with the revert reason read back by replaying the call at the block)` : ""}; nothing was retried, replaced or skipped.
 
 The run deploys the reference contracts from \`assets/erc-8447/contracts\` and executes the two end-to-end cases of the test suite (\`test/SAICaseA.t.sol\`, \`test/SAICaseB.t.sol\`) against the **live** ERC-8436 registries and the **live** token-bound task tender kernel on Sepolia, with the same step list that \`tools/sepolia/run.js\` runs against a local node. Machine-readable record: \`deployments/sepolia.json\`; per-batch receipts: \`deployments/sepolia/receipts-batch-*.json\`; the signed transactions as broadcast: \`deployments/sepolia/batch-*.json\`.
 
@@ -73,7 +78,7 @@ for (const [name, a] of Object.entries(contracts)) { const d = deployTx[a.toLowe
 md += `
 Compiler: solc ${record.compiler.solc}, optimizer enabled (runs 1), via-IR, EVM version cancun, metadata hash ipfs — the settings of \`foundry.toml\`. \`SwarmRegistry\` is linked against the three deployed logic libraries; the decision adapters take the registry, the ERC-8436 registry, the verifier role, the quorum and the body size (2 of 3 for the council, 2 of 2 for the chamber), a 15-minute voting window and a 2-minute margin.
 
-Revisions since the run: the two decision adapters above are the revision-2.1 code and predate revision 2.2 (2026-10-20), which binds every proposal to the phase it was filed in (the finding of the second review round, \`docs/design-memo.md\` 11.3); the registry, the libraries, the module, the tender adapter and the account are the current code. Neither case enacts a decision across a phase change, so the record is unaffected; the revision-2.2 adapter is exercised by the regression tests in \`test/SAIDecision.t.sol\`.
+Revisions: the council and chamber adapters used by Cases A and B are the revision-2.1 code and predate revision 2.2 (2026-10-20), which binds every proposal to the phase it was filed in (the finding of the second review round, \`docs/design-memo.md\` 11.3); neither case enacts a decision across a phase change, so their record is unaffected. ${caseR ? "The revision-2.2 adapter was deployed on 2026-10-22 next to the same registry and exercised on-chain by Case R below." : "The revision-2.2 adapter is exercised by the regression tests in \`test/SAIDecision.t.sol\`."} The registry, the libraries, the module, the tender adapter and the account are the current code.
 
 Live dependencies (not deployed by this run): ERC-8436 \`ACDFRegistry\` ${ad(st.ACDFRegistry)} and \`ACDFPolicyRegistry\` ${ad(record.dependencies.ACDFPolicyRegistry)} (revision 3 of the ERC-8436 reference, byte-identical outside immutables and metadata to the fixtures vendored in \`test/fixtures\`), and the token-bound task tender kernel \`TaskToken\` ${ad(st.TaskToken)} (v3.2.1, the source vendored in \`test/fixtures\`).
 
@@ -99,18 +104,24 @@ Swarm id \`${st.swarmB}\`. Spec hash \`${st.hashesB.specHash}\`, charter hash \`
 
 Open bidding phase: the three allowlisted bidders join and record proof sketches; the chamber (2 of 2) advances the swarm to the selected execution phase carrying coord, c1, c2, b1 and b2. Then b2 loses its allowlist eligibility, anyone's \`challenge\` suspends it, a contribution it records while suspended is accepted but flagged \`whileSuspended\`, the coordinator substitutes b3 into the seat, b3 accepts the charter, b1 and b3 record proofs, the judge accepts both milestones, the swarm concludes \`ACHIEVED\` and is dissolved.
 
-## Transactions
+${caseR ? `## Case R — the revision-2.2 decision regression on the live chain
+
+Swarm id \`${st.swarmR}\` (the registry's third swarm), formed by the coordinator with a three-stage spec — stage 0 \`RECRUIT\`, stages 1 and 2 \`INHERIT\` — whose \`ADMIT\` and \`ADVANCE\` points are held by the revision-2.2 adapter ${ad(st.adapter22)} (council of three verifiers, 2 of 3, the same constructor arguments as the Case A council). Spec hash \`${st.hashesR.specHash}\`, charter hash \`${st.hashesR.charterHash}\`; the pack is \`deployments/sepolia/case-r/swarm-pack.json\`.
+
+The sequence is the one reported in the thread's second review round, with the admission case added to show the rule is general. In stage 0 the council approves an \`ADMIT\` of w1 (issue \`${st.issueR_admit0}\`) and an \`ADVANCE\` (issue \`${st.issueR_adv1}\`); once that advance is Final, the identical \`ADVANCE\` is filed again — the obligation of a finished proceeding is free — and approved as well (issue \`${st.issueR_adv2}\`). Executing the first advance moves the swarm to stage 1. Executing the second, whose calldata would also satisfy the 1 → 2 transition and whose commitment version is unchanged, is **refused**: the transaction is mined with status 0 and the replayed call returns \`SAIDecision: phase changed\`. Executing the stage-0 \`ADMIT\` is refused the same way. The same two calls filed in stage 1 are new proposals (issues \`${st.issueR_admit1}\` and \`${st.issueR_adv3}\`), approved by the council and performed: w1 is admitted, the swarm reaches stage 2, the coordinator concludes it \`ACHIEVED\` and dissolves it.
+
+` : ""}## Transactions
 
 Gas is the live Sepolia figure; the last column is the ratio to the local rehearsal (\`tools/sepolia/run.js direct\` against anvil, cancun rules), given because Sepolia priced the same transactions several times higher than the local node at the time of the run.
 
 | # | Step | From | Transaction | Block | Gas | vs rehearsal |
 |---|---|---|---|---|---|---|
 `;
-st.steps.forEach((s, i) => { md += `| ${i} | ${s.label}${s.contractAddress ? " → `" + s.contractAddress + "`" : ""} | ${s.from} | ${tx(s.hash)} | ${s.block} | ${n(s.gasUsed)} | ${ratio(s)} |\n`; });
+st.steps.forEach((s, i) => { md += `| ${i} | ${s.label}${s.contractAddress ? " → `" + s.contractAddress + "`" : ""}${s.reverted ? " — **refused**: `" + s.reason + "`" : ""} | ${s.from} | ${tx(s.hash)} | ${s.block} | ${n(s.gasUsed)} | ${ratio(s)} |\n`; });
 md += `
 ## How the run was made
 
-\`tools/sepolia/run.js\` holds one step list for both modes. The rehearsal ran the list in \`direct\` mode against a local anvil with the vendored fixtures (\`--fixtures\`), which produced the gas reference above. The Sepolia run used \`relay\` mode: the process signed each batch of transactions off-line (\`relay plan\`, EIP-1559 type-2 transactions, gas limit = max(step limit, 16 × rehearsal gas), max fee 0.5 gwei then 0.25 gwei, priority fee 0.1 gwei), a relay broadcast the raw transactions in order through \`eth_sendRawTransaction\` against \`https://ethereum-sepolia-rpc.publicnode.com\` and returned the receipts, and \`relay ingest\` applied them before the next batch was planned. Batches end where a later step needs a value from a receipt: the task token id, the two ERC-8436 issue ids, the fulfillment submission id. Seven batches were needed.
+\`tools/sepolia/run.js\` holds one step list for both modes. The rehearsal ran the list in \`direct\` mode against a local anvil with the vendored fixtures (\`--fixtures\`), which produced the gas reference above. The Sepolia run used \`relay\` mode: the process signed each batch of transactions off-line (\`relay plan\`, EIP-1559 type-2 transactions, gas limit = max(step limit, 16 × rehearsal gas), max fee 0.5 gwei then 0.25 gwei, priority fee 0.1 gwei), a relay broadcast the raw transactions in order through \`eth_sendRawTransaction\` against \`https://ethereum-sepolia-rpc.publicnode.com\` and returned the receipts, and \`relay ingest\` applied them before the next batch was planned. Batches end where a later step needs a value from a receipt: the task token id, the ERC-8436 issue ids, the fulfillment submission id. Seven batches were needed for Cases A and B${caseR ? ", four more for Case R on 2026-10-22 (the step list marks the two refusals as expected: a refused step is mined, its reason is read back by replaying the call at its block, and the run stops if it had succeeded instead)" : ""}.
 
 Addresses of contracts created by the deployer were predicted from the nonce before broadcast and matched on-chain; the swarm ids were predicted from the registry address and the counter and matched the \`SwarmFormed\` events.
 
@@ -127,11 +138,14 @@ if (fs.existsSync(fsf)) {
 - Case A, after dissolution: \`isAuthorized(swarmA, REPRESENT, coord)\` and \`isAuthorized(swarmA, AMEND, coord)\` are both **false**; the account's \`recoveryAddress()\` is coord (\`${A.account.recoveryAddress}\`); the account's balance is **${A.account.balanceWei} wei** — w1 received its 70 % of the 0.002 ETH reward through the account while the swarm lived, and coord recovered the remaining 30 % through the recovery path after dissolution. The registry answers \`supportsInterface(0x085203a4)\` and the account \`supportsInterface(0x25e98353)\` with true.
 - Case B: state **${B.swarm.state}**, outcome **${B.swarm.outcome}**, reason **${B.swarm.reason}**, phase ${B.swarm.phase} (the selected execution phase), charter hash \`${B.swarm.charterHash}\` equal to SHA-256(JCS(\`case-b/swarm-pack.json\`)). Objective kind **${B.objective.kind}**, ${B.objective.milestonesAccepted} of ${B.objective.milestoneCount} milestones **${B.milestones[0].status}** / **${B.milestones[1].status}**. b2 is **${B.b2.status}** with suspension cause **${B.b2.suspension}** and exit reason **${B.b2.exitReason}** (suspended by the challenge at ${B.b2.suspendedAt}, replaced at ${B.b2.exitedAt}); b3 is **${B.b3.status}** with \`substituted = ${B.b3.substituted}\`, admitted in phase ${B.b3.admittedPhase}, exit reason **${B.b3.exitReason}**. \`memberCount\` reports ${B.memberCount.join("/")} after dissolution.
 `;
+  const Rf = f.caseR;
+  if (Rf) md += `- Case R: state **${Rf.swarm.state}**, outcome **${Rf.swarm.outcome}**, reason **${Rf.swarm.reason}**, phase ${Rf.swarm.phase} (stage 2, reached by the stage-1 decision), charter hash \`${Rf.swarm.charterHash}\` equal to SHA-256(JCS(\`case-r/swarm-pack.json\`)). w1 is **${Rf.w1.status}** with exit reason **${Rf.w1.exitReason}**, admitted in phase ${Rf.w1.admittedPhase} (the stage-1 decision, not the stage-0 one). On the revision-2.2 adapter, \`proposalOf\` reports the refused proposals — the second stage-0 advance and the stage-0 admission — with \`phase = 0\` and \`enacted = false\`, and the performed ones with \`enacted = true\`; the ERC-8436 registry holds no enactment record for the refused issues.
+`;
 }
 md += `
 ## Verification
 
-All ten contracts are verified on Sourcify with an exact match (creation and runtime bytecode, metadata included); \`deployments/sepolia/verification.md\` has the per-contract record and the exact input. The inputs are the files under \`assets/erc-8447/contracts\` at commit \`a78b92780818e3edbd630b95eee8ba73a3ee921c\` with the compiler settings above; \`forge verify-contract --chain sepolia --verifier sourcify <address> <path>:<Name>\` reproduces it, with \`--libraries\` for \`SwarmRegistry\` (LifecycleLib ${st.LifecycleLib}, MembershipLib ${st.MembershipLib}, ResourceLib ${st.ResourceLib}).
+All ${caseR ? "eleven" : "ten"} contracts are verified on Sourcify with an exact match (creation and runtime bytecode, metadata included); \`deployments/sepolia/verification.md\` has the per-contract record and the exact input. The inputs are the files under \`assets/erc-8447/contracts\` at commit \`a78b92780818e3edbd630b95eee8ba73a3ee921c\` with the compiler settings above; \`forge verify-contract --chain sepolia --verifier sourcify <address> <path>:<Name>\` reproduces it, with \`--libraries\` for \`SwarmRegistry\` (LifecycleLib ${st.LifecycleLib}, MembershipLib ${st.MembershipLib}, ResourceLib ${st.ResourceLib}).
 `;
 fs.writeFileSync(path.join(ROOT, "docs", "sepolia-evidence.md"), md);
 console.log(`wrote deployments/sepolia.json and docs/sepolia-evidence.md: ${st.steps.length} steps, ${n(totalGas)} gas`);

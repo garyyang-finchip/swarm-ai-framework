@@ -137,6 +137,27 @@ function specB(coord, chamber, allowlist, descriptors) {
     settlementWindow: DAY, amendmentExitWindow: 2n * DAY, descriptorHash: ZERO32,
   };
 }
+function specR(coord, adapter, descriptors) {
+  return {
+    roles: [
+      { roleId: ROLE.coordinator, min: 1, max: 1, eligibility: ethers.ZeroAddress, selfJoin: true },
+      { roleId: ROLE.verifier, min: 3, max: 3, eligibility: ethers.ZeroAddress, selfJoin: true },
+      { roleId: ROLE.worker, min: 0, max: 2, eligibility: ethers.ZeroAddress, selfJoin: false },
+    ],
+    phases: [
+      phase("stage-0", TERM.shared, TERM.partitioned, TERM.collective, 0 /*OPEN*/, 0 /*RECRUIT*/, 0n, descriptors[0]),
+      phase("stage-1", TERM.shared, TERM.partitioned, TERM.collective, 0 /*OPEN*/, 1 /*INHERIT*/, 0n, descriptors[1]),
+      phase("stage-2", TERM.shared, TERM.partitioned, TERM.collective, 0 /*OPEN*/, 1 /*INHERIT*/, 0n, descriptors[2]),
+    ],
+    authorities: authorities(coord, {
+      ADMIT: { kind: KIND.ADDRESS, target: adapter, roleId: ZERO32 },
+      ADVANCE: { kind: KIND.ADDRESS, target: adapter, roleId: ZERO32 },
+    }),
+    activation: 0 /*ROSTER_MET*/, contributions: 1, minMembers: 4, maxMembers: 0,
+    recruitmentWindow: 7n * DAY, maxDuration: 90n * DAY, inactivityTimeout: 0n, ineligibleGrace: DAY,
+    settlementWindow: DAY, amendmentExitWindow: 2n * DAY, descriptorHash: ZERO32,
+  };
+}
 const SPEC_TYPE = I.SwarmRegistry.getFunction("specHashOf").inputs[0];
 function specHash(spec) { return ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode([SPEC_TYPE], [spec])); }
 function swarmIdOf(registry, n) {
@@ -176,6 +197,42 @@ function buildPackB(ctx) {
   p.mode.phases[0].description = "Any eligible bidder joins and records a proof sketch as a contribution. The evaluation chamber scores the sketches and selects. (Unbounded input window on this evidence run; the test suite uses a two-day window.)";
   p.resources = [];
   p.decisionPoints.ADVANCE.adapter = ctx.chamber; delete p.decisionPoints.ADVANCE.policyId;
+  return p;
+}
+function buildPackR(ctx) {
+  // a three-phase staged swarm built from the two-phase example: the decision regression of the
+  // second review round (revision 2.2), run on the live chain against the revision-2.2 adapter
+  const p = JSON.parse(fs.readFileSync(path.join(ROOT, "assets", "erc-8447", "examples", "swarm-pack-two-phase-tender.json"), "utf8"));
+  p.mode.namedProfile = "staged";
+  p.mode.phases = [
+    { name: "stage-0", payoff: "sai.payoff.shared", topology: "sai.topology.partitioned", coordination: "sai.coordination.collective", boundary: "OPEN", admission: "RECRUIT", inputWindow: 0,
+      description: "Recruitment and first work stage. The verifier council (2-of-3 through the collective decision adapter) holds ADMIT and ADVANCE; the worker candidate applies here." },
+    { name: "stage-1", payoff: "sai.payoff.shared", topology: "sai.topology.partitioned", coordination: "sai.coordination.collective", boundary: "OPEN", admission: "INHERIT", inputWindow: 0,
+      description: "Second stage; every member carries over. Decisions approved in stage 0 and not performed before the advance are void: the adapter binds each proposal to its filing phase (revision 2.2)." },
+    { name: "stage-2", payoff: "sai.payoff.shared", topology: "sai.topology.partitioned", coordination: "sai.coordination.collective", boundary: "OPEN", admission: "INHERIT", inputWindow: 0,
+      description: "Third stage; reached only by a decision taken in stage 1." },
+  ];
+  p.objective = { kind: "TERMINAL", goal: "Exercise the phase binding of collective decisions on the live chain: two ADVANCE proposals approved in stage 0 must not chain the swarm into stage 2, and an ADMIT approved in stage 0 must be refused after the advance and re-decided in stage 1.",
+    successCriteria: ["The second stage-0 ADVANCE approval is refused in stage 1 (SAIDecision: phase changed)", "The stage-0 ADMIT approval is refused in stage 1 and a stage-1 decision admits the candidate", "A stage-1 ADVANCE decision reaches stage 2"],
+    acceptance: { kind: "judge", authority: ctx.judge, description: "The deployer, as judge, records the outcome; the coordinator concludes" } };
+  p.roles = [
+    { roleId: ROLE.coordinator, name: "sai.role.coordinator", description: "Standing coordinator; self-join", eligibility: { requires: [] } },
+    { roleId: ROLE.verifier, name: "sai.role.verifier", description: "Council of three; self-join; decides ADMIT and ADVANCE 2-of-3", eligibility: { requires: [] } },
+    { roleId: ROLE.worker, name: "sai.role.worker", description: "Applies in stage 0; admitted by a council decision", eligibility: { requires: [] } },
+  ];
+  p.commitment = { allocation: [
+      { phase: "stage-0", rule: "equal", description: "No payment on this run" },
+      { phase: "stage-1", rule: "equal", description: "No payment on this run" },
+      { phase: "stage-2", rule: "equal", description: "No payment on this run" } ],
+    costs: ["None"], liabilities: ["None"], dataAccess: ["None"], externalActions: ["None"] };
+  p.resources = [];
+  p.decisionPoints = {
+    ADMIT: { description: "Collective: verifier council 2-of-3 through the revision-2.2 collective decision adapter; each decision snapshots the council roster and binds the filing phase", adapter: ctx.adapter },
+    ADVANCE: { description: "Collective: the same council and adapter", adapter: ctx.adapter },
+    CONCLUDE: { description: "ADDRESS: the coordinator, or the judge as acceptance authority" },
+    REPRESENT: { description: "ROLE sai.role.coordinator" },
+  };
+  p.origin = { kind: "sai.origin.initiator", ref: ZERO32, description: "Formed by the coordinator for the revision-2.2 decision regression on Sepolia" };
   return p;
 }
 function packHashes(pack, phases) {
@@ -352,6 +409,75 @@ function steps(ctx, st, keys) {
   call("B: milestone 1 accepted", "deployer", R, I.SwarmRegistry, "recordMilestone", () => [need(st, "swarmB"), 1, 1, id("lemma B proof")], 200_000n);
   call("B: conclude ACHIEVED", "deployer", R, I.SwarmRegistry, "conclude", () => [need(st, "swarmB"), 1, id("both lemmas")], 300_000n);
   call("B: dissolve", "coord", R, I.SwarmRegistry, "dissolve", () => [need(st, "swarmB")], 300_000n);
+  if (!ctx.caseR) return list;
+
+  // ======================================================== Case R (revision 2.2 regression)
+  // A revision-2.2 adapter is deployed next to the registry; a three-phase swarm exercises the
+  // phase binding of proposals on the live chain. Steps marked expectRevert are expected to be
+  // mined with status 0: the refusal is the evidence.
+  const issueOf = (key) => (r, s) => { const ev = r.logs.find((l) => l.topics[0] === I.SwarmDecisionAdapter.getEvent("ProposalOpened").topicHash); s[key] = ev.topics[1]; };
+  push({ label: "SwarmDecisionAdapter adapter22", from: "deployer", to: null, gas: 6_000_000n,
+    data: () => A.SwarmDecisionAdapter.bytecode.object + I.SwarmDecisionAdapter.encodeDeploy([R(), need(st, "ACDFRegistry"), ROLE.verifier, 2, 3, 15n * 60n, 2n * 60n]).slice(2),
+    after: (r, s) => { s.adapter22 = r.contractAddress; } });
+  const packR = () => {
+    if (st.packR) return st.packR;
+    const p = buildPackR({ judge, adapter: need(st, "adapter22") });
+    const h = packHashes(p, [0, 1, 2]);
+    const spec = specR(coord, st.adapter22, h.descriptors);
+    p.specHash = specHash(spec);
+    const charterHash = sha256(jcs(p));
+    st.packR = p; st.hashesR = { ...h, charterHash, specHash: p.specHash }; st.specR = spec;
+    fs.mkdirSync(path.join(OUT, "case-r"), { recursive: true });
+    fs.writeFileSync(path.join(OUT, "case-r", "swarm-pack.json"), JSON.stringify(p, null, 2) + "\n");
+    return p;
+  };
+  call("R: form", "coord", R, I.SwarmRegistry, "form", () => { packR(); return [st.specR, st.hashesR.charterHash, st.hashesR.commitmentHash, ctx.charterURIR, ZERO32,
+      { kind: ORIGIN.initiator, ref: ZERO32 },
+      { objectiveHash: st.hashesR.objectiveHash, kind: 0 /*TERMINAL*/, acceptanceAuthority: judge, obligation: { chainId: 0n, target: ethers.ZeroAddress, id: 0n }, milestoneCount: 0 }]; },
+    5_000_000n, 0n, (r, s) => { s.swarmR = swarmIdOf(s.SwarmRegistry, ctx.caseRIndex || 3); });
+  const chR = () => need(st, "hashesR").charterHash;
+  const adapter22 = () => need(st, "adapter22");
+  const advanceCall = () => I.SwarmRegistry.encodeFunctionData("advance", [need(st, "swarmR"), [], []]);
+  const admitCall = () => I.SwarmRegistry.encodeFunctionData("admit", [need(st, "swarmR"), w1, ROLE.worker]);
+  call("R: coord joins", "coord", R, I.SwarmRegistry, "join", () => [need(st, "swarmR"), ROLE.coordinator, chR()], 600_000n);
+  call("R: c1 joins", "c1", R, I.SwarmRegistry, "join", () => [need(st, "swarmR"), ROLE.verifier, chR()], 600_000n);
+  call("R: c2 joins", "c2", R, I.SwarmRegistry, "join", () => [need(st, "swarmR"), ROLE.verifier, chR()], 600_000n);
+  call("R: c3 joins", "c3", R, I.SwarmRegistry, "join", () => [need(st, "swarmR"), ROLE.verifier, chR()], 600_000n);
+  call("R: activate", "deployer", R, I.SwarmRegistry, "activate", () => [need(st, "swarmR")], 300_000n);
+  call("R: w1 applies", "w1", R, I.SwarmRegistry, "applyToJoin", () => [need(st, "swarmR"), ROLE.worker, chR()], 600_000n);
+  // stage 0: an ADMIT and an ADVANCE are filed and approved
+  call("R: council opens ADMIT (stage 0)", "deployer", adapter22, I.SwarmDecisionAdapter, "open", () => [need(st, "swarmR"), DP.ADMIT, admitCall(), [c1, c2, c3]], 2_500_000n, 0n, issueOf("issueR_admit0"));
+  call("R: council opens ADVANCE #1 (stage 0)", "deployer", adapter22, I.SwarmDecisionAdapter, "open", () => [need(st, "swarmR"), DP.ADVANCE, advanceCall(), [c1, c2, c3]], 2_500_000n, 0n, issueOf("issueR_adv1"));
+  call("R: c1 votes ADMIT", "c1", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_admit0"), 1, 0, true], 400_000n);
+  call("R: c2 votes ADMIT", "c2", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_admit0"), 1, 0, true], 400_000n);
+  call("R: settle ADMIT", "deployer", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "settleRound", () => [need(st, "issueR_admit0")], 600_000n);
+  call("R: c1 votes ADVANCE #1", "c1", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv1"), 1, 0, true], 400_000n);
+  call("R: c2 votes ADVANCE #1", "c2", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv1"), 1, 0, true], 400_000n);
+  call("R: settle ADVANCE #1", "deployer", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "settleRound", () => [need(st, "issueR_adv1")], 600_000n);
+  // the identical proposal can be filed again once the first is Final (the obligation is finished)
+  call("R: council opens ADVANCE #2 (stage 0)", "deployer", adapter22, I.SwarmDecisionAdapter, "open", () => [need(st, "swarmR"), DP.ADVANCE, advanceCall(), [c1, c2, c3]], 2_500_000n, 0n, issueOf("issueR_adv2"));
+  call("R: c1 votes ADVANCE #2", "c1", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv2"), 1, 0, true], 400_000n);
+  call("R: c3 votes ADVANCE #2", "c3", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv2"), 1, 0, true], 400_000n);
+  call("R: settle ADVANCE #2", "deployer", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "settleRound", () => [need(st, "issueR_adv2")], 600_000n);
+  // stage 0 -> 1 on the first approval; the second approval and the stage-0 ADMIT are refused in stage 1
+  call("R: execute ADVANCE #1 (stage 0 -> 1)", "deployer", adapter22, I.SwarmDecisionAdapter, "execute", () => [need(st, "issueR_adv1")], 1_500_000n);
+  call("R: execute ADVANCE #2 in stage 1 (refused)", "deployer", adapter22, I.SwarmDecisionAdapter, "execute", () => [need(st, "issueR_adv2")], 1_500_000n);
+  list[list.length - 1].expectRevert = "SAIDecision: phase changed";
+  call("R: execute stage-0 ADMIT in stage 1 (refused)", "deployer", adapter22, I.SwarmDecisionAdapter, "execute", () => [need(st, "issueR_admit0")], 1_500_000n);
+  list[list.length - 1].expectRevert = "SAIDecision: phase changed";
+  // stage 1: the same calls are new proposals (the obligation carries the phase) and work
+  call("R: council opens ADMIT (stage 1)", "deployer", adapter22, I.SwarmDecisionAdapter, "open", () => [need(st, "swarmR"), DP.ADMIT, admitCall(), [c1, c2, c3]], 2_500_000n, 0n, issueOf("issueR_admit1"));
+  call("R: council opens ADVANCE #3 (stage 1)", "deployer", adapter22, I.SwarmDecisionAdapter, "open", () => [need(st, "swarmR"), DP.ADVANCE, advanceCall(), [c1, c2, c3]], 2_500_000n, 0n, issueOf("issueR_adv3"));
+  call("R: c2 votes ADMIT (stage 1)", "c2", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_admit1"), 1, 0, true], 400_000n);
+  call("R: c3 votes ADMIT (stage 1)", "c3", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_admit1"), 1, 0, true], 400_000n);
+  call("R: settle ADMIT (stage 1)", "deployer", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "settleRound", () => [need(st, "issueR_admit1")], 600_000n);
+  call("R: execute ADMIT (stage 1)", "deployer", adapter22, I.SwarmDecisionAdapter, "execute", () => [need(st, "issueR_admit1")], 1_500_000n);
+  call("R: c1 votes ADVANCE #3", "c1", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv3"), 1, 0, true], 400_000n);
+  call("R: c2 votes ADVANCE #3", "c2", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "castBallot", () => [need(st, "issueR_adv3"), 1, 0, true], 400_000n);
+  call("R: settle ADVANCE #3", "deployer", () => need(st, "ACDFRegistry"), I.ACDFRegistry, "settleRound", () => [need(st, "issueR_adv3")], 600_000n);
+  call("R: execute ADVANCE #3 (stage 1 -> 2)", "deployer", adapter22, I.SwarmDecisionAdapter, "execute", () => [need(st, "issueR_adv3")], 1_500_000n);
+  call("R: conclude ACHIEVED", "coord", R, I.SwarmRegistry, "conclude", () => [need(st, "swarmR"), 1, id("phase binding held")], 300_000n);
+  call("R: dissolve", "coord", R, I.SwarmRegistry, "dissolve", () => [need(st, "swarmR")], 300_000n);
   return list;
 }
 
@@ -370,7 +496,8 @@ async function runDirect() {
   const env = opt("env") ? JSON.parse(fs.readFileSync(opt("env"), "utf8")) : {};
   const ctx = { fixtures: flag("fixtures"), ...env };
   ctx.settleBy = ctx.settleBy || Math.floor(Date.now() / 1000) + 60 * 86400;
-  ctx.charterURIA = ctx.charterURIA || "ipfs://sai-case-a-pack"; ctx.charterURIB = ctx.charterURIB || "ipfs://sai-case-b-pack";
+  ctx.charterURIA = ctx.charterURIA || "ipfs://sai-case-a-pack"; ctx.charterURIB = ctx.charterURIB || "ipfs://sai-case-b-pack"; ctx.charterURIR = ctx.charterURIR || "ipfs://sai-case-r-pack";
+  if (flag("case-r")) ctx.caseR = true;
   const st = { steps: [] };
   const list = steps(ctx, st, keys);
   const fee = await provider.getFeeData();
@@ -379,7 +506,18 @@ async function runDirect() {
     const tx = { to: s.to ? s.to() : null, data: s.data(), value: s.value || 0n, gasLimit: s.gas,
       maxFeePerGas: fee.maxFeePerGas, maxPriorityFeePerGas: fee.maxPriorityFeePerGas };
     const sent = await wallet.sendTransaction(tx);
-    const r = await sent.wait();
+    let r;
+    try { r = await sent.wait(); } catch (e) { r = await provider.getTransactionReceipt(sent.hash); if (!r) throw e; }
+    if (s.expectRevert) {
+      if (r.status !== 0) throw new Error("expected a revert, got success: " + s.label);
+      // replay the call at the block to read the reason
+      let reason = "";
+      try { await provider.call({ from: wallet.address, to: tx.to, data: tx.data, blockTag: r.blockNumber }); } catch (e) { reason = (e.reason || e.shortMessage || String(e)); }
+      if (!reason.includes(s.expectRevert)) throw new Error(`expected revert "${s.expectRevert}", got "${reason}": ${s.label}`);
+      st.steps.push({ label: s.label, hash: r.hash, gasUsed: r.gasUsed.toString(), block: r.blockNumber, reverted: true, reason: s.expectRevert });
+      console.log(`${s.label.padEnd(36)} gas ${r.gasUsed.toString().padStart(8)}  ${r.hash}  reverted as expected: ${s.expectRevert}`);
+      continue;
+    }
     if (r.status !== 1) throw new Error("failed: " + s.label);
     if (s.after) s.after(r, st);
     st.steps.push({ label: s.label, hash: r.hash, gasUsed: r.gasUsed.toString(), block: r.blockNumber, contractAddress: r.contractAddress || undefined });
@@ -416,7 +554,7 @@ async function relayPlan() {
     const tx = { type: 2, chainId: CHAIN_ID, nonce, to, data, value: s.value || 0n, gasLimit: limitFor(s), maxFeePerGas: maxFee, maxPriorityFeePerGas: prio };
     const raw = await keys[s.from].signTransaction(tx);
     const predicted = to ? null : ethers.getCreateAddress({ from: keys[s.from].address, nonce });
-    batch.push({ index: i, label: s.label, from: s.from, nonce, gasLimit: limitFor(s).toString(), raw, predictedAddress: predicted });
+    batch.push({ index: i, label: s.label, from: s.from, nonce, gasLimit: limitFor(s).toString(), raw, predictedAddress: predicted, expectRevert: s.expectRevert || undefined });
     st.nonces[s.from] = nonce + 1;
     if (predicted) { // deployments are deterministic: later steps may use the address right away
       const key = s.label.startsWith("SwarmAccount") ? s.label.split(" ")[1] : s.label.startsWith("SwarmDecisionAdapter") ? s.label.split(" ")[1] : s.label.split(" ")[0];
@@ -424,6 +562,7 @@ async function relayPlan() {
     }
     if (s.label === "A: form") st.swarmA = swarmIdOf(st.SwarmRegistry, 1);
     if (s.label === "B: form") st.swarmB = swarmIdOf(st.SwarmRegistry, 2);
+    if (s.label === "R: form") st.swarmR = swarmIdOf(st.SwarmRegistry, ctx.caseRIndex || 3);
   }
   st.batches += 1;
   const file = path.join(OUT, `batch-${st.batches}.json`);
@@ -445,6 +584,13 @@ async function relayIngest() {
   if (receipts.length !== pending.indices.length) console.warn(`warning: ${receipts.length} receipts for ${pending.indices.length} transactions`);
   for (let k = 0; k < receipts.length; k++) {
     const r = receipts[k]; const s = list[pending.indices[k]];
+    if (s.expectRevert) {
+      if (Number(r.status) !== 0) { st.failed = { step: s.label, hash: r.transactionHash || r.hash }; saveState(stateFile, st); throw new Error(`expected a revert, got success: ${s.label}`); }
+      const reason = r.revertReason || "";
+      if (!reason.includes(s.expectRevert)) { st.failed = { step: s.label, hash: r.transactionHash || r.hash }; saveState(stateFile, st); throw new Error(`expected revert "${s.expectRevert}", got "${reason}": ${s.label}`); }
+      st.steps.push({ label: s.label, from: s.from, hash: r.transactionHash || r.hash, gasUsed: BigInt(r.gasUsed).toString(), block: Number(r.blockNumber), reverted: true, reason: s.expectRevert });
+      continue;
+    }
     if (Number(r.status) !== 1) { st.failed = { step: s.label, hash: r.transactionHash || r.hash }; saveState(stateFile, st); throw new Error(`step failed: ${s.label} (${r.transactionHash || r.hash})`); }
     const norm = { hash: r.transactionHash || r.hash, status: 1, contractAddress: r.contractAddress ? ethers.getAddress(r.contractAddress) : null, gasUsed: BigInt(r.gasUsed), blockNumber: Number(r.blockNumber), logs: r.logs || [] };
     if (s.after) s.after(norm, st);
