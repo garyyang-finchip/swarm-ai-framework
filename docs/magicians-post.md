@@ -2,7 +2,7 @@
 
 Category: ERCs. Title: **[Draft ERC] Swarm AI Framework — registry and charter model for purpose-bound agent swarms**
 
-Posted 2026-10-18 as Ethereum Magicians topic 29998 (`https://ethereum-magicians.org/t/draft-erc-swarm-ai-framework-registry-and-charter-model-for-purpose-bound-agent-swarms/29998`), which is the ERC's `discussions-to`. The pull request (ethereum/ERCs #2081) is linked from the first post; the editors assigned ERC-8447 on 2026-10-19 and the topic is retitled `ERC-8447: Swarm AI Framework`.
+Posted 2026-10-18 as Ethereum Magicians topic 29998 (`https://ethereum-magicians.org/t/draft-erc-swarm-ai-framework-registry-and-charter-model-for-purpose-bound-agent-swarms/29998`), which is the ERC's `discussions-to`. The pull request (ethereum/ERCs#2081) is linked from the first post; the editors assigned ERC-8447 on 2026-10-19 and the topic is retitled `ERC-8447: Swarm AI Framework`.
 
 ---
 

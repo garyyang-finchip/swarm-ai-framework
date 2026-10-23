@@ -2,7 +2,7 @@
 
 > Agents form, bound, run and dissolve purpose-bound swarms — collectives with an explicit membership boundary, an objective with attainment rules and a declared collaboration structure — as one interoperable on-chain record.
 
-**Status:** reference v0.3.2 (2026-10-20), revision 2.2 of the draft. Filed as ethereum/ERCs PR #2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Deployed on Sepolia on 2026-10-19 with both end-to-end cases executed against the live ERC-8436 registries and the live task tender kernel (`docs/sepolia-evidence.md`, registry `0x2C1065a0a892619c1c4288abaf319326C303a1bc`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. Revision 2.2 answers the second round: the decision adapter binds every proposal to the phase it was filed in, so an approval obtained in one phase is performed in no other (`advance` is relative, and a selective advance replaces the deciding roster). The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 93 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
+**Status:** reference v0.3.2 (2026-10-20), revision 2.2 of the draft. Filed as pull request ethereum/ERCs#2081 and assigned **ERC-8447** on 2026-10-19; discussion at Ethereum Magicians topic 29998 (`ERC-8447: Swarm AI Framework`). Deployed on Sepolia on 2026-10-19 with both end-to-end cases executed against the live ERC-8436 registries and the live task tender kernel (`docs/sepolia-evidence.md`, registry `0x2C1065a0a892619c1c4288abaf319326C303a1bc`). Revision 2 answers the first review round (`docs/magicians-replies-2026-10-19.md`): the pack's economic commitment carries its own hash and makes amendments material by construction, `challenge` and `expel` re-adjudicate on evidence with a gas-remainder rule, and the account profile states its post-dissolution rule on-chain. Revision 2.2 answers the second round: the decision adapter binds every proposal to the phase it was filed in, so an approval obtained in one phase is performed in no other (`advance` is relative, and a selective advance replaces the deciding roster). The package: the full ERC text, the reference registry and its libraries, the swarm account, the collective-decision and task-tender adapters, five eligibility modules, schemas, example packs, deterministic vectors and a Foundry suite of 93 tests run against the real ERC-8436 registries and a real token-bound task tender kernel.
 
 ## What it is
 
@@ -94,9 +94,17 @@ Deployed 2026-10-19 from `assets/erc-8447/contracts` (revision 2.1) with the pin
 
 Swarm ids: Case A `0x170bd77e6ed40d99c9930799c381b997497e6ffe86c2e9f90659dbc2fbf280b0` (task token 19), Case B `0xa82999407bc283e1aba303192ad133a68fb18dcd8a990ed4d15c17be5edd8487`, Case R `0x9d983aaaf48a30a107614ea585b9a65026d620070f1ff9115937bada125aac00`; all three `DISSOLVED` with outcome `ACHIEVED`. To reproduce locally: `node tools/sepolia/run.js direct --rpc http://127.0.0.1:8545 --keys keys.json --fixtures --case-r` against an anvil node.
 
+## Review credits
+
+The draft changed under review on Ethereum Magicians topic 29998. `docs/design-memo.md` logs each change with the post that caused it, and each reply went out only once the change was in this repository (`docs/magicians-replies-2026-10-19.md`).
+
+- SergeevDmitry (post 2): the pack's economic commitment carries its own hash, so an amendment to the economic terms is material by construction rather than by the amendment authority's choice.
+- Zealynx (posts 3 and 8): the gas-remainder rule in `challenge` and `expel`, re-evaluation of the module before expulsion, and the rule that a module's answer must not depend on anything the evaluated account can borrow within the transaction.
+- Revinand (posts 4 and 9): authority of every kind ends at dissolution and the account states its recovery rule on-chain; proposals are bound to the phase they were filed in, so an approval obtained in one phase is performed in no other (revision 2.2, run on Sepolia as Case R).
+
 ## Next steps
 
-Editor review and merge of PR #2081 (ERC-8447 files on the branch); Case C (standing committee with `succeed()`) in a later round.
+Editor review and merge of ethereum/ERCs#2081 (ERC-8447 files on the branch); Case C (standing committee with `succeed()`) in a later round.
 
 ## License
 

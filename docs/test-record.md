@@ -30,6 +30,10 @@
 
 The fixtures under `test/fixtures/` are unmodified copies of the ERC-8436 reference registries (`ethereum/ERCs` `assets/erc-8436/contracts` at `4dec821b`) and of the token-bound task tender kernel (`garyyang-finchip/task-token-standard` at `3196db87`); see `test/fixtures/README.md`.
 
+### Review regressions
+
+The findings raised on Ethereum Magicians topic 29998 are covered by named tests, so the record can be read against the thread: `test_commitmentOrObjectiveChangeIsMaterialByConstruction` (post 2, SergeevDmitry); `test_challengeGasStarvedCatchingModuleIsUnevaluable`, `test_challengeReinstatesOnEvidence` and `test_expelReevaluatesTheModule` (post 3, Zealynx); `test_nobodyIsAuthorizedAfterDissolution` and `test_accountRecoveryAfterDissolution` (post 4, Revinand); `test_twoApprovedAdvancesDoNotChainAcrossPhases` and `test_proposalApprovedInAnEarlierPhaseIsRefused` (post 9, Revinand — the same sequence ran on Sepolia as Case R). Post 8 (Zealynx, balances borrowed within a transaction) changed the module rule in the text; the reference modules read nothing a caller can borrow, so no test changed.
+
 ## Sizes (runtime bytes, `forge build --sizes`)
 
 | Contract | Runtime | Margin to EIP-170 |
