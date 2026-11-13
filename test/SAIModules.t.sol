@@ -73,6 +73,43 @@ contract SAIModulesTest is SAIBase {
         assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.ACTIVE));
     }
 
+    /// v0.3: agent 0 is an agent like any other. ERC-8004 registries number from 0 (the reference
+    /// registry's `_lastId++`; Agent #0 exists on the official Sepolia deployment), and v0.2 read
+    /// `agentId == 0` as "no declaration" in both functions, so the first agent of a registry could
+    /// never be declared or hold a seat. The declaration is a flag now; `declared` exposes it.
+    function test_erc8004Eligibility_agentZero() public {
+        IdentityMock ids = new IdentityMock();
+        ERC8004Eligibility mod = new ERC8004Eligibility(ids);
+        ids.set(0, w1, address(0)); // the registry's first agent, owned by w1
+        assertFalse(mod.declared(w1));
+        assertFalse(mod.isEligible(bytes32(0), bytes32(0), w1), "no declaration yet");
+        vm.prank(w2);
+        vm.expectRevert("ERC8004Eligibility: not the agent's owner or wallet");
+        mod.declareAgent(0);
+        vm.prank(w1);
+        mod.declareAgent(0);
+        assertTrue(mod.declared(w1));
+        assertEq(mod.agentOf(w1), 0);
+        assertTrue(mod.isEligible(bytes32(0), bytes32(0), w1), "agent 0 holds its seat");
+        // a seat in a swarm, and the live predicate still binds it: the agent moves, the member is suspended
+        bytes32 id = formWith(specWithWorkerModule(address(mod)), defaultObjective());
+        admitAndAccept(id, coord, ROLE_COORD);
+        admitAndAccept(id, w1, ROLE_WORKER);
+        reg.activate(id);
+        ids.set(0, stranger, address(0));
+        (bool ev, bool ok) = reg.challenge(id, w1);
+        assertTrue(ev); assertFalse(ok);
+        assertEq(uint8(status(id, w1)), uint8(T.MemberStatus.SUSPENDED));
+        // an account that declared nothing is told apart from one that declared agent 0
+        assertEq(mod.agentOf(w3), 0);
+        assertFalse(mod.declared(w3));
+        assertFalse(mod.isEligible(bytes32(0), bytes32(0), w3));
+        // an id beyond the packed width is refused before the registry is asked
+        vm.prank(w1);
+        vm.expectRevert("ERC8004Eligibility: agent id out of range");
+        mod.declareAgent(uint256(type(uint248).max) + 1);
+    }
+
     function test_assertionLevelEligibility() public {
         AssertionsMock kya = new AssertionsMock();
         bytes32 scheme = keccak256("scheme");
