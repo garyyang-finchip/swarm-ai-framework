@@ -104,10 +104,13 @@ contract SAIModulesTest is SAIBase {
         assertEq(mod.agentOf(w3), 0);
         assertFalse(mod.declared(w3));
         assertFalse(mod.isEligible(bytes32(0), bytes32(0), w3));
-        // an id beyond the packed width is refused before the registry is asked
-        vm.prank(w1);
-        vm.expectRevert("ERC8004Eligibility: agent id out of range");
-        mod.declareAgent(uint256(type(uint248).max) + 1);
+        // the whole uint256 range is an id: whatever the registry issued is declarable
+        ids.set(type(uint256).max, w3, address(0));
+        vm.prank(w3);
+        mod.declareAgent(type(uint256).max);
+        assertTrue(mod.declared(w3));
+        assertEq(mod.agentOf(w3), type(uint256).max);
+        assertTrue(mod.isEligible(bytes32(0), bytes32(0), w3));
     }
 
     function test_assertionLevelEligibility() public {

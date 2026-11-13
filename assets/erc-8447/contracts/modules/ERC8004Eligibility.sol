@@ -15,18 +15,19 @@ import {IERC8004Identity} from "./interfaces/IERC8004Identity.sol";
 ///         registries number agents from 0 (the reference implementation's `_lastId++`; Agent #0
 ///         exists on the official Sepolia deployment), and v0.2 used `agentId == 0` as "no
 ///         declaration" in both `declareAgent` and `isEligible`, so the first agent of any
-///         registry could never hold a seat. Storage: one slot per account holds the id and the
-///         flag. `agentOf` keeps its v0.2 signature for readers; `declared` says whether the id
-///         it returns is a declaration.
+///         registry could never hold a seat. `agentOf` keeps its v0.2 signature and its full
+///         `uint256` range (an id is whatever the registry issued; nothing here narrows it);
+///         `declared` says whether the id it returns is a declaration. A module must tell an
+///         undeclared account from a legitimate agent id 0.
 contract ERC8004Eligibility is IEligibility {
     IERC8004Identity public immutable identity;
 
-    struct Declaration {
-        uint248 agentId;
-        bool declared;
-    }
+    /// @notice The agent an account declared; 0 when it declared none, and also when it declared
+    ///         agent 0 — read `declared` to tell the two apart.
+    mapping(address => uint256) public agentOf;
 
-    mapping(address => Declaration) private _declarations;
+    /// @notice Whether the account has declared an agent.
+    mapping(address => bool) public declared;
 
     event AgentDeclared(address indexed account, uint256 indexed agentId);
 
@@ -38,26 +39,14 @@ contract ERC8004Eligibility is IEligibility {
     /// @notice Declare the agent this account acts for. Any id the registry knows is accepted,
     ///         agent 0 included; the account must be the agent's owner or its agent wallet now.
     function declareAgent(uint256 agentId) external {
-        require(agentId <= type(uint248).max, "ERC8004Eligibility: agent id out of range");
         require(_controls(msg.sender, agentId), "ERC8004Eligibility: not the agent's owner or wallet");
-        _declarations[msg.sender] = Declaration({agentId: uint248(agentId), declared: true});
+        agentOf[msg.sender] = agentId;
+        declared[msg.sender] = true;
         emit AgentDeclared(msg.sender, agentId);
     }
 
-    /// @notice The agent an account declared; 0 when it declared none, and also when it declared
-    ///         agent 0 — read `declared` to tell the two apart.
-    function agentOf(address account) external view returns (uint256) {
-        return _declarations[account].agentId;
-    }
-
-    /// @notice Whether the account has declared an agent.
-    function declared(address account) external view returns (bool) {
-        return _declarations[account].declared;
-    }
-
     function isEligible(bytes32, bytes32, address account) external view returns (bool) {
-        Declaration memory d = _declarations[account];
-        return d.declared && _controls(account, d.agentId);
+        return declared[account] && _controls(account, agentOf[account]);
     }
 
     function _controls(address account, uint256 agentId) private view returns (bool) {
